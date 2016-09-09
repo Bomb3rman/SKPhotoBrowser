@@ -122,6 +122,7 @@
 		8909B5321BC791280060A053 /* SKPhotoBrowser */ = {
 			isa = PBXGroup;
 			children = (
+				8909B5351BC791280060A053 /* Info.plist */,
 				89D0BA461D5994A8002A811B /* SKAnimator.swift */,
 				8917B1B31D5A14B0000CE1C4 /* SKButtons.swift */,
 				26C97AD41D0EB6870039F6CB /* SKCache.swift */,
@@ -131,18 +132,17 @@
 				8909B53D1BC791510060A053 /* SKDetectingView.swift */,
 				8909B53E1BC791510060A053 /* SKIndicatorView.swift */,
 				8CA6C6511CBE76E80054D3C2 /* SKLocalPhoto.swift */,
+				89D0BA481D59966B002A811B /* SKMesurement.swift */,
 				89C24A831D657AFE005F09A9 /* SKPagingScrollView.swift */,
 				8909B53F1BC791510060A053 /* SKPhoto.swift */,
+				8909B54C1BC7916E0060A053 /* SKPhotoBrowser.bundle */,
+				8909B5331BC791280060A053 /* SKPhotoBrowser.h */,
 				8909B5411BC791510060A053 /* SKPhotoBrowser.swift */,
+				8917B1AF1D5A13DE000CE1C4 /* SKPhotoBrowserDelegate.swift */,
 				89C24A811D657AD1005F09A9 /* SKPhotoBrowserOptions.swift */,
 				890A6F1F1D5D9E53003B01F0 /* SKToolbar.swift */,
-				8909B5331BC791280060A053 /* SKPhotoBrowser.h */,
-				8917B1AF1D5A13DE000CE1C4 /* SKPhotoBrowserDelegate.swift */,
-				89D0BA481D59966B002A811B /* SKMesurement.swift */,
 				8909B5421BC791510060A053 /* SKZoomingScrollView.swift */,
-				8909B5351BC791280060A053 /* Info.plist */,
 				210E53EB1C986D1C008DD5E3 /* extensions */,
-				8909B54C1BC7916E0060A053 /* SKPhotoBrowser.bundle */,
 			);
 			path = SKPhotoBrowser;
 			sourceTree = "<group>";
@@ -215,7 +215,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 0700;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = suzuki_keishi;
 				TargetAttributes = {
 					8909B52F1BC791280060A053 = {
@@ -340,8 +340,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -388,8 +390,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -409,6 +413,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -420,6 +425,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -440,6 +446,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
