@@ -15,8 +15,7 @@ public class SKPhotoBrowser: UIViewController {
     
     let pageIndexTagOffset: Int = 1000
     
-    private var closeButton: SKCloseButton!
-    private var deleteButton: SKDeleteButton!
+    private var navigationBar: SKNavigationBar!
     private var toolbar: SKToolbar!
     
     // actions
@@ -110,8 +109,7 @@ public class SKPhotoBrowser: UIViewController {
         super.viewDidLoad()
         
         configureAppearance()
-        configureCloseButton()
-        configureDeleteButton()
+        configureNavigationBar()
         configureToolbar()
         
         animator.willPresent(self)
@@ -133,11 +131,10 @@ public class SKPhotoBrowser: UIViewController {
         super.viewWillLayoutSubviews()
         isPerformingLayout = true
         
-        closeButton.updateFrame()
-        deleteButton.updateFrame()
         pagingScrollView.updateFrame(view.bounds, currentPageIndex: currentPageIndex)
         
         toolbar.frame = frameForToolbarAtOrientation()
+        navigationBar.frame = frameForNavigationBarAtOrientation()
         
         // where did start
         delegate?.didShowPhotoAtIndex?(currentPageIndex)
@@ -220,32 +217,6 @@ public class SKPhotoBrowser: UIViewController {
     public func determineAndClose() {
         delegate?.willDismissAtPageIndex?(currentPageIndex)
         animator.willDismiss(self)
-    }
-}
-
-// MARK: - Public Function For Customizing Buttons
-
-public extension SKPhotoBrowser {
-  func updateCloseButton(image: UIImage, size: CGSize? = nil) {
-        if closeButton == nil {
-            configureCloseButton()
-        }
-        closeButton.setImage(image, forState: .Normal)
-    
-        if let size = size {
-            closeButton.setFrameSize(size)
-        }
-    }
-  
-  func updateDeleteButton(image: UIImage, size: CGSize? = nil) {
-        if deleteButton == nil {
-            configureDeleteButton()
-        }
-        deleteButton.setImage(image, forState: .Normal)
-    
-        if let size = size {
-            deleteButton.setFrameSize(size)
-        }
     }
 }
 
@@ -360,17 +331,6 @@ public extension SKPhotoBrowser {
 // MARK: - Internal Function
 
 internal extension SKPhotoBrowser {
-    func showButtons() {
-        if SKPhotoBrowserOptions.displayCloseButton {
-            closeButton.alpha = 1
-            closeButton.frame = closeButton.showFrame
-        }
-        if SKPhotoBrowserOptions.displayDeleteButton {
-            deleteButton.alpha = 1
-            deleteButton.frame = deleteButton.showFrame
-        }
-    }
-    
     func pageDisplayedAtIndex(index: Int) -> SKZoomingScrollView? {
         return pagingScrollView.pageDisplayedAtIndex(index)
     }
@@ -387,6 +347,24 @@ internal extension SKPhotoBrowser {
 // MARK: - Internal Function For Frame Calc
 
 internal extension SKPhotoBrowser {
+    func frameForNavigationBarAtOrientation() -> CGRect {
+        let currentOrientation = UIApplication.sharedApplication().statusBarOrientation
+        var height: CGFloat = navigationController?.navigationBar.frame.size.height ?? 64
+        if UIInterfaceOrientationIsLandscape(currentOrientation) {
+            height = navigationController?.navigationBar.frame.size.height ?? 48
+        }
+        return CGRect(x: 0, y: 0, width: view.bounds.size.width, height: height)
+    }
+    
+    func frameForNavigationBarHideAtOrientation() -> CGRect {
+        let currentOrientation = UIApplication.sharedApplication().statusBarOrientation
+        var height: CGFloat = navigationController?.navigationBar.frame.size.height ?? 64
+        if UIInterfaceOrientationIsLandscape(currentOrientation) {
+            height = navigationController?.navigationBar.frame.size.height ?? 48
+        }
+        return CGRect(x: 0, y: -height, width: view.bounds.size.width, height: height)
+    }
+    
     func frameForToolbarAtOrientation() -> CGRect {
         let currentOrientation = UIApplication.sharedApplication().statusBarOrientation
         var height: CGFloat = navigationController?.navigationBar.frame.size.height ?? 44
@@ -541,28 +519,20 @@ private extension SKPhotoBrowser {
         panGesture = UIPanGestureRecognizer(target: self, action: #selector(SKPhotoBrowser.panGestureRecognized(_:)))
         panGesture.minimumNumberOfTouches = 1
         panGesture.maximumNumberOfTouches = 1
+        
         if !SKPhotoBrowserOptions.disableVerticalSwipe {
             view.addGestureRecognizer(panGesture)
         }
     }
     
-    func configureCloseButton() {
-        closeButton = SKCloseButton(frame: .zero)
-        closeButton.addTarget(self, action: #selector(closeButtonPressed(_:)), forControlEvents: .TouchUpInside)
-        closeButton.hidden = !SKPhotoBrowserOptions.displayCloseButton
-        view.addSubview(closeButton)
-    }
-    
-    func configureDeleteButton() {
-        deleteButton = SKDeleteButton(frame: .zero)
-        deleteButton.addTarget(self, action: #selector(deleteButtonPressed(_:)), forControlEvents: .TouchUpInside)
-        deleteButton.hidden = !SKPhotoBrowserOptions.displayDeleteButton
-        view.addSubview(deleteButton)
-    }
-    
     func configureToolbar() {
         toolbar = SKToolbar(frame: frameForToolbarAtOrientation(), browser: self)
         view.addSubview(toolbar)
+    }
+    
+    func configureNavigationBar() {
+        navigationBar = SKNavigationBar(frame: frameForNavigationBarAtOrientation(), browser: self)
+        view.addSubview(navigationBar)
     }
     
     func setControlsHidden(hidden: Bool, animated: Bool, permanent: Bool) {
@@ -576,14 +546,9 @@ private extension SKPhotoBrowser {
                 self.toolbar.alpha = alpha
                 self.toolbar.frame = hidden ? self.frameForToolbarHideAtOrientation() : self.frameForToolbarAtOrientation()
                 
-                if SKPhotoBrowserOptions.displayCloseButton {
-                    self.closeButton.alpha = alpha
-                    self.closeButton.frame = hidden ? self.closeButton.hideFrame : self.closeButton.showFrame
-                }
-                if SKPhotoBrowserOptions.displayDeleteButton {
-                    self.deleteButton.alpha = alpha
-                    self.deleteButton.frame = hidden ? self.deleteButton.hideFrame : self.deleteButton.showFrame
-                }
+                self.navigationBar.alpha = alpha
+                self.navigationBar.frame = hidden ? self.frameForNavigationBarHideAtOrientation() : self.frameForNavigationBarAtOrientation()
+                
                 captionViews.forEach { $0.alpha = alpha }
             },
             completion: nil)

@@ -151,7 +151,6 @@ private extension SKAnimator {
             initialSpringVelocity:0,
             options:.CurveEaseInOut,
             animations: {
-                browser.showButtons()
                 browser.backgroundView.alpha = 1.0
                 
                 self.resizableImageView?.frame = self.finalImageViewFrame
