@@ -91,9 +91,6 @@ class SKPagingScrollView: UIScrollView {
                 let pageIndex = page.tag - pageIndexTagOffset
                 page.frame = frameForPageAtIndex(pageIndex)
                 page.setMaxMinZoomScalesForCurrentBounds()
-                if page.captionView != nil {
-                    page.captionView.frame = frameForCaptionView(page.captionView, index: pageIndex)
-                }
             }
         }
         
@@ -145,24 +142,7 @@ class SKPagingScrollView: UIScrollView {
             
             visiblePages.append(page)
             addSubview(page)
-            
-            // if exists caption, insert
-            if let captionView: SKCaptionView = createCaptionView(index) {
-                captionView.frame = frameForCaptionView(captionView, index: index)
-                captionView.alpha = browser.areControlsHidden() ? 0 : 1
-                addSubview(captionView)
-                // ref val for control
-                page.captionView = captionView
-            }
         }
-    }
-    
-    func frameForCaptionView(captionView: SKCaptionView, index: Int) -> CGRect {
-        let pageFrame = frameForPageAtIndex(index)
-        let captionSize = captionView.sizeThatFits(CGSize(width: pageFrame.size.width, height: 0))
-        let navHeight = browser?.navigationController?.navigationBar.frame.size.height ?? 44
-        return CGRect(x: pageFrame.origin.x, y: pageFrame.size.height - captionSize.height - navHeight,
-                      width: pageFrame.size.width, height: captionSize.height)
     }
     
     func pageDisplayedAtIndex(index: Int) -> SKZoomingScrollView? {
@@ -200,13 +180,6 @@ private extension SKPagingScrollView {
         pageFrame.size.width -= (2 * 10)
         pageFrame.origin.x = (bounds.size.width * CGFloat(index)) + sideMargin
         return pageFrame
-    }
-    
-    func createCaptionView(index: Int) -> SKCaptionView? {
-        guard let photo = browser?.photoAtIndex(index) where photo.caption != nil else {
-            return nil
-        }
-        return SKCaptionView(photo: photo)
     }
     
     func getFirstIndex() -> Int {

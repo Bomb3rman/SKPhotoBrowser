@@ -12,8 +12,8 @@ import Foundation
 private let bundle = NSBundle(forClass: SKPhotoBrowser.self)
 
 class SKToolbar: UIToolbar {
-    var toolCounterLabel: UILabel!
-    var toolCounterButton: UIBarButtonItem!
+    var toolCaptionView: SKCaptionView!
+    var toolCaptionButton: UIBarButtonItem!
     var toolPreviousButton: UIBarButtonItem!
     var toolNextButton: UIBarButtonItem!
     var toolActionButton: UIBarButtonItem!
@@ -35,7 +35,7 @@ class SKToolbar: UIToolbar {
         setupApperance()
         setupPreviousButton()
         setupNextButton()
-        setupCounterLabel()
+        setupCaptionButton()
         setupActionButton()
         setupToolbar()
     }
@@ -43,14 +43,24 @@ class SKToolbar: UIToolbar {
     func updateToolbar(currentPageIndex: Int) {
         guard let browser = browser else { return }
         
-        if browser.numberOfPhotos > 1 {
-            toolCounterLabel.text = "\(currentPageIndex + 1) / \(browser.numberOfPhotos)"
-        } else {
-            toolCounterLabel.text = nil
+        let photo = browser.photoAtIndex(currentPageIndex)
+        
+        if let captionTitle = photo.captionTitle {
+            toolCaptionView.titleText = captionTitle
+        }
+        
+        if let captionDetail = photo.captionDetail {
+            toolCaptionView.detailText = captionDetail
         }
         
         toolPreviousButton.enabled = (currentPageIndex > 0)
         toolNextButton.enabled = (currentPageIndex < browser.numberOfPhotos - 1)
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+    
+        toolCaptionButton.customView?.frame.size = sizeForCaptionViewAtOrientation()
     }
 }
 
@@ -78,7 +88,7 @@ private extension SKToolbar {
         }
         if SKPhotoBrowserOptions.displayCounterLabel {
             items.append(flexSpace)
-            items.append(toolCounterButton)
+            items.append(toolCaptionButton)
             items.append(flexSpace)
         } else {
             items.append(flexSpace)
@@ -105,20 +115,25 @@ private extension SKToolbar {
         toolNextButton = UIBarButtonItem(customView: nextBtn)
     }
     
-    func setupCounterLabel() {
-        toolCounterLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 95, height: 40))
-        toolCounterLabel.textAlignment = .Center
-        toolCounterLabel.backgroundColor = .clearColor()
-        toolCounterLabel.font = SKPhotoBrowserOptions.toolbarFont
-        toolCounterLabel.textColor = SKPhotoBrowserOptions.textAndIconColor
-        toolCounterLabel.shadowColor = SKPhotoBrowserOptions.toolbarTextShadowColor
-        toolCounterLabel.shadowOffset = CGSize(width: 0.0, height: 1.0)
-        toolCounterButton = UIBarButtonItem(customView: toolCounterLabel)
+    func setupCaptionButton() {
+        toolCaptionView = SKCaptionView(frame: CGRectZero)
+        toolCaptionButton = UIBarButtonItem(customView: toolCaptionView)
     }
     
     func setupActionButton() {
         toolActionButton = UIBarButtonItem(barButtonSystemItem: .Action, target: browser, action: #selector(SKPhotoBrowser.actionButtonPressed))
         toolActionButton.tintColor = SKPhotoBrowserOptions.textAndIconColor
+    }
+    
+    func sizeForCaptionViewAtOrientation() -> CGSize {
+        let currentOrientation = UIApplication.sharedApplication().statusBarOrientation
+        var height: CGFloat = 38
+        var width = bounds.size.width - (2 * 90)
+        if UIInterfaceOrientationIsLandscape(currentOrientation) {
+            height = 26
+            width = bounds.size.width - (2 * 120)
+        }
+        return CGSize(width: width, height: height)
     }
 }
 

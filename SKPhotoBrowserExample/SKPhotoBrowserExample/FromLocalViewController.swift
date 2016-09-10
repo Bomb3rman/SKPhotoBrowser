@@ -132,7 +132,8 @@ private extension FromLocalViewController {
     func createLocalPhotos() -> [SKPhotoProtocol] {
         return (0..<10).map { (i: Int) -> SKPhotoProtocol in
             let photo = SKPhoto.photoWithImage(UIImage(named: "image\(i%10).jpg")!)
-            photo.caption = caption[i%10]
+            photo.captionTitle = captionTitle[i%10]
+            photo.captionDetail = captionDetail[i%10]
 //            photo.contentMode = .ScaleAspectFill
             return photo
         }
@@ -154,16 +155,29 @@ class ExampleCollectionViewCell: UICollectionViewCell {
     }
 }
 
-var caption = ["Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-               "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book",
-               "It has survived not only five centuries, but also the leap into electronic typesetting",
-               "remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-               "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-               "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-               "It has survived not only five centuries, but also the leap into electronic typesetting",
-               "remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-               "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-               "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-               "It has survived not only five centuries, but also the leap into electronic typesetting",
-               "remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-               ]
+
+var captionTitle = ["Lucas Nogueira",
+                    "Bruno Caboclo",
+                    "Demar Derozen",
+                    "Kyle Lowry",
+                    "Patrick Patteron",
+                    "Cory Joseph",
+                    "Jonas Valanciunas",
+                    "DeMarre Carroll",
+                    "Terrence Ross",
+                    "Norman Powell",
+                    "Delon Wright",
+                    "Jared Sullinger"]
+
+var captionDetail = ["01-30-2016 10:10pm",
+                     "Today 12:35pm",
+                     "Monday 1:00am",
+                     "Tuesday 6:00pm",
+                     "Wednesday 1:23pm",
+                     "Thursday 8:09am",
+                     "Friday 12:00am",
+                     "Saturday 3:30pm",
+                     "Sunday 11:59pm",
+                     "Yesterday 10:30am",
+                     "October 31, 2017",
+                     "December 25, 2004 12:00am"]

@@ -180,7 +180,7 @@ public class SKPhotoBrowser: UIViewController {
     public func performLayout() {
         isPerformingLayout = true
         
-        toolbar.updateToolbar(currentPageIndex)
+        updateNavigationBarAndToolBar()
         
         // reset local cache
         pagingScrollView.reload()
@@ -246,7 +246,7 @@ public extension SKPhotoBrowser {
                 return
             }
             isEndAnimationByToolBar = false
-            toolbar.updateToolbar(currentPageIndex)
+            updateNavigationBarAndToolBar()
             
             let pageFrame = frameForPageAtIndex(index)
             pagingScrollView.animate(pageFrame)
@@ -303,11 +303,11 @@ public extension SKPhotoBrowser {
         }
         
         var activityItems: [AnyObject] = [underlyingImage]
-        if photo.caption != nil && includeCaption {
+        if let caption = photo.captionTitle where includeCaption {
             if let shareExtraCaption = SKPhotoBrowserOptions.shareExtraCaption {
-                activityItems.append(photo.caption + shareExtraCaption)
+                activityItems.append(caption + shareExtraCaption)
             } else {
-                activityItems.append(photo.caption)
+                activityItems.append(caption)
             }
         }
         activityViewController = UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
@@ -535,10 +535,13 @@ private extension SKPhotoBrowser {
         view.addSubview(navigationBar)
     }
     
+    func updateNavigationBarAndToolBar() {
+        toolbar.updateToolbar(currentPageIndex)
+        navigationBar.updateTitle(currentPageIndex)
+    }
+    
     func setControlsHidden(hidden: Bool, animated: Bool, permanent: Bool) {
         cancelControlHiding()
-        
-        let captionViews = pagingScrollView.getCaptionViews()
         
         UIView.animateWithDuration(0.35,
             animations: { () -> Void in
@@ -548,8 +551,6 @@ private extension SKPhotoBrowser {
                 
                 self.navigationBar.alpha = alpha
                 self.navigationBar.frame = hidden ? self.frameForNavigationBarHideAtOrientation() : self.frameForNavigationBarAtOrientation()
-                
-                captionViews.forEach { $0.alpha = alpha }
             },
             completion: nil)
         
@@ -571,7 +572,7 @@ private extension SKPhotoBrowser {
             if currentPageIndex != 0 {
                 gotoPreviousPage()
             }
-            toolbar.updateToolbar(currentPageIndex)
+            updateNavigationBarAndToolBar()
             
         } else if photos.count == 1 {
             dismissPhotoBrowser(animated: false)
@@ -600,7 +601,7 @@ extension SKPhotoBrowser: UIScrollViewDelegate {
         
         if currentPageIndex != previousCurrentPage {
             delegate?.didShowPhotoAtIndex?(currentPageIndex)
-            toolbar.updateToolbar(currentPageIndex)
+            updateNavigationBarAndToolBar()
         }
     }
     

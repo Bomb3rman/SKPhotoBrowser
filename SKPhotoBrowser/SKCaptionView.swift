@@ -9,9 +9,21 @@
 import UIKit
 
 public class SKCaptionView: UIView {
-    private var photo: SKPhotoProtocol?
-    private var photoLabel: UILabel!
-    private var photoLabelPadding: CGFloat = 10
+    
+    private var titleLabel: UILabel!
+    private var detailLabel: UILabel!
+    
+    var titleText: String! {
+        didSet {
+            titleLabel.text = titleText
+        }
+    }
+    
+    var detailText: String! {
+        didSet {
+            detailLabel.text = detailText
+        }
+    }
     
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -19,57 +31,42 @@ public class SKCaptionView: UIView {
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
+        
+        titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: frame.width - 10, height: 20))
+        titleLabel.textAlignment = .Center
+        titleLabel.backgroundColor = .clearColor()
+        titleLabel.font  = UIFont.boldSystemFontOfSize(15)
+        titleLabel.textColor = .whiteColor()
+        titleLabel.text = nil
+        addSubview(titleLabel)
+        
+        detailLabel = UILabel(frame: CGRect(x: 0, y: titleLabel.frame.size.height, width: frame.width - 10, height: 16))
+        detailLabel.textAlignment = .Center
+        detailLabel.backgroundColor = .clearColor()
+        detailLabel.font  = UIFont.systemFontOfSize(12)
+        detailLabel.textColor = .whiteColor()
+        detailLabel.text = nil
+        addSubview(detailLabel)
     }
     
-    public convenience init(photo: SKPhotoProtocol) {
-        let screenBound = UIScreen.mainScreen().bounds
-        self.init(frame: CGRect(x: 0, y: 0, width: screenBound.size.width, height: screenBound.size.height))
-        self.photo = photo
-        setup()
-    }
-    
-    public override func sizeThatFits(size: CGSize) -> CGSize {
-        guard let text = photoLabel.text else {
-            return CGSize.zero
+    override public func layoutSubviews() {
+        super.layoutSubviews()
+        
+        let currentOrientation = UIApplication.sharedApplication().statusBarOrientation
+        if UIInterfaceOrientationIsLandscape(currentOrientation) {
+            let width = (frame.width - 10) / 2
+            titleLabel.frame = CGRect(x: 0, y: 3, width: width, height: 16)
+            titleLabel.textAlignment = .Right
+            
+            let x = titleLabel.frame.origin.x + titleLabel.frame.width + 15
+            detailLabel.frame = CGRect(x: x, y: 3, width: width - 15, height: 16)
+            detailLabel.textAlignment = .Left
+        } else {
+            titleLabel.frame = CGRect(x: 0, y: 0, width: self.frame.width - 10, height: 16)
+            titleLabel.textAlignment = .Center
+            
+            detailLabel.frame = CGRect(x: 0, y: titleLabel.frame.size.height + 4, width: frame.width - 10, height: 16)
+            detailLabel.textAlignment = .Center
         }
-        guard photoLabel.text?.characters.count > 0 else {
-            return CGSize.zero
-        }
-        
-        let font: UIFont = photoLabel.font
-        let width: CGFloat = size.width - photoLabelPadding * 2
-        let height: CGFloat = photoLabel.font.lineHeight * CGFloat(photoLabel.numberOfLines)
-        
-        let attributedText = NSAttributedString(string: text, attributes: [NSFontAttributeName: font])
-        let textSize = attributedText.boundingRectWithSize(CGSize(width: width, height: height), options: .UsesLineFragmentOrigin, context: nil).size
-        
-        return CGSize(width: textSize.width, height: textSize.height + photoLabelPadding * 2)
     }
 }
-
-private extension SKCaptionView {
-    func setup() {
-        opaque = false
-        autoresizingMask = [.FlexibleWidth, .FlexibleTopMargin, .FlexibleRightMargin, .FlexibleLeftMargin]
-        
-        // setup photoLabel
-        setupPhotoLabel()
-    }
-    
-    func setupPhotoLabel() {
-        photoLabel = UILabel(frame: CGRect(x: photoLabelPadding, y: 0, width: bounds.size.width - (photoLabelPadding * 2), height: bounds.size.height))
-        photoLabel.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
-        photoLabel.opaque = false
-        photoLabel.backgroundColor = .clearColor()
-        photoLabel.textColor = SKPhotoBrowserOptions.textAndIconColor
-        photoLabel.textAlignment = .Center
-        photoLabel.lineBreakMode = .ByTruncatingTail
-        photoLabel.numberOfLines = 3
-        photoLabel.shadowColor = UIColor(white: 0.0, alpha: 0.5)
-        photoLabel.shadowOffset = CGSize(width: 0.0, height: 1.0)
-        photoLabel.font = SKPhotoBrowserOptions.captionFont
-        photoLabel.text = photo?.caption
-        addSubview(photoLabel)
-    }
-}
-

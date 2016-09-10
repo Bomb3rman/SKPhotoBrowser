@@ -33,6 +33,16 @@ class SKNavigationBar: UINavigationBar {
         setupAppearence()
         setupButtons()
     }
+    
+    func updateTitle(currentPageIndex: Int) {
+        guard let browser = browser else { return }
+        
+        if browser.numberOfPhotos > 1 {
+            navigationItem.title = "\(currentPageIndex + 1) / \(browser.numberOfPhotos)"
+        } else {
+            navigationItem.title = nil
+        }
+    }
 }
 
 private extension SKNavigationBar {

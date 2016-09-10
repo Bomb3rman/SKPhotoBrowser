@@ -15,7 +15,8 @@ public class SKLocalPhoto: NSObject, SKPhotoProtocol {
     public var photoURL: String!
     public var contentMode: UIViewContentMode = .ScaleToFill
     public var shouldCachePhotoURLImage: Bool = false
-    public var caption: String!
+    public var captionTitle: String!
+    public var captionDetail: String!
     public var index: Int = 0
     
     override init() {
