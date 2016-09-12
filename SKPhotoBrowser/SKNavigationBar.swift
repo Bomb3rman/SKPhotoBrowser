@@ -31,7 +31,7 @@ class SKNavigationBar: UINavigationBar {
         items = [navigationItem]
         
         setupAppearence()
-        setupButtons()
+        setupCloseButton()
     }
     
     func updateTitle(currentPageIndex: Int) {
@@ -55,17 +55,11 @@ private extension SKNavigationBar {
         titleTextAttributes = [ NSForegroundColorAttributeName : UIColor.whiteColor() ]
     }
     
-    func setupButtons() {
+    func setupCloseButton() {
         if SKPhotoBrowserOptions.displayCloseButton {
             let closeButton = UIBarButtonItem(barButtonSystemItem: .Stop, target: browser, action: #selector(SKPhotoBrowser.closeButtonPressed))
             closeButton.tintColor = .whiteColor()
             navigationItem.leftBarButtonItem = closeButton
-        }
-        
-        if SKPhotoBrowserOptions.displayDeleteButton {
-            let deleteButton = UIBarButtonItem(barButtonSystemItem: .Trash, target: browser, action: #selector(SKPhotoBrowser.deleteButtonPressed))
-            deleteButton.tintColor = .whiteColor()
-            navigationItem.rightBarButtonItem = deleteButton
         }
     }
 }

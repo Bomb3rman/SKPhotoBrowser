@@ -17,6 +17,7 @@ class SKToolbar: UIToolbar {
     var toolPreviousButton: UIBarButtonItem!
     var toolNextButton: UIBarButtonItem!
     var toolActionButton: UIBarButtonItem!
+    var toolDeleteButton: UIBarButtonItem!
     
     private weak var browser: SKPhotoBrowser?
     
@@ -37,6 +38,7 @@ class SKToolbar: UIToolbar {
         setupNextButton()
         setupCaptionButton()
         setupActionButton()
+        setupDeleteButton()
         setupToolbar()
     }
     
@@ -82,6 +84,11 @@ private extension SKToolbar {
         
         let flexSpace = UIBarButtonItem(barButtonSystemItem: .FlexibleSpace, target: self, action: nil)
         var items = [UIBarButtonItem]()
+
+        if SKPhotoBrowserOptions.displayAction && SKPhotoBrowserOptions.displayDeleteButton {
+            items.append(toolActionButton)
+        }
+        
         items.append(flexSpace)
         if browser.numberOfPhotos > 1 && SKPhotoBrowserOptions.displayBackAndForwardButton {
             items.append(toolPreviousButton)
@@ -97,9 +104,13 @@ private extension SKToolbar {
             items.append(toolNextButton)
         }
         items.append(flexSpace)
-        if SKPhotoBrowserOptions.displayAction {
+
+        if SKPhotoBrowserOptions.displayDeleteButton {
+             items.append(toolDeleteButton)
+        } else if SKPhotoBrowserOptions.displayAction {
             items.append(toolActionButton)
         }
+        
         setItems(items, animated: false)
     }
     
@@ -123,6 +134,11 @@ private extension SKToolbar {
     func setupActionButton() {
         toolActionButton = UIBarButtonItem(barButtonSystemItem: .Action, target: browser, action: #selector(SKPhotoBrowser.actionButtonPressed))
         toolActionButton.tintColor = SKPhotoBrowserOptions.textAndIconColor
+    }
+    
+    func setupDeleteButton() {
+        toolDeleteButton = UIBarButtonItem(barButtonSystemItem: .Trash, target: browser, action: #selector(SKPhotoBrowser.deleteButtonPressed))
+        toolDeleteButton.tintColor = .whiteColor()
     }
     
     func sizeForCaptionViewAtOrientation() -> CGSize {
