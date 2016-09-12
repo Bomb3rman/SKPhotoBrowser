@@ -18,6 +18,7 @@ public class SKLocalPhoto: NSObject, SKPhotoProtocol {
     public var captionTitle: String!
     public var captionDetail: String!
     public var index: Int = 0
+    public var videoURL: NSURL!
     
     override init() {
         super.init()

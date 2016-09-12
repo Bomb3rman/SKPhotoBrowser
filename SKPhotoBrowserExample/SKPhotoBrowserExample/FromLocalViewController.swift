@@ -46,7 +46,13 @@ extension FromLocalViewController {
             return UICollectionViewCell()
         }
         
-        cell.exampleImageView.image = UIImage(named: "image\(indexPath.row % 10).jpg")
+        if indexPath.row < 10 {
+            cell.exampleImageView.image = UIImage(named: "image\(indexPath.row % 10).jpg")
+        } else {
+            let path = NSBundle.mainBundle().pathForResource("video\((indexPath as NSIndexPath).row%10)", ofType:"mov")
+            let videoThumb = SKPhoto.videoThumb(NSURL(fileURLWithPath: path!, isDirectory: false))
+            cell.exampleImageView.image = videoThumb
+        }
 //        cell.exampleImageView.contentMode = .ScaleAspectFill
         return cell
     }
@@ -130,12 +136,21 @@ private extension FromLocalViewController {
     }
     
     func createLocalPhotos() -> [SKPhotoProtocol] {
-        return (0..<10).map { (i: Int) -> SKPhotoProtocol in
-            let photo = SKPhoto.photoWithImage(UIImage(named: "image\(i%10).jpg")!)
-            photo.captionTitle = captionTitle[i%10]
-            photo.captionDetail = captionDetail[i%10]
-//            photo.contentMode = .ScaleAspectFill
-            return photo
+        return (0..<12).map { (i: Int) -> SKPhotoProtocol in
+            if i < 10 {
+                let photo = SKPhoto.photoWithImage(UIImage(named: "image\(i%10).jpg")!)
+                photo.captionTitle = captionTitle[i%10]
+                photo.captionDetail = captionDetail[i%10]
+//              photo.contentMode = .ScaleAspectFill
+                return photo
+            } else {
+                let path = NSBundle.mainBundle().pathForResource("video\(i%10)", ofType:"mov")
+                print(path)
+                let photo = SKPhoto.photoWithVideoURL(NSURL(fileURLWithPath: path!, isDirectory: false))
+                photo.captionTitle = captionTitle[i%10]
+                photo.captionDetail = captionDetail[i%10]
+                return photo
+            }
         }
     }
 }

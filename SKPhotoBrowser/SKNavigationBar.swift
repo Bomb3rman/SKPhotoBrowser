@@ -48,7 +48,7 @@ class SKNavigationBar: UINavigationBar {
 private extension SKNavigationBar {
     
     func setupAppearence() {
-        backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.6)//UIColor.blackColor().withAlphaComponent(0.6)
+        backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.6)
         clipsToBounds = true
         translucent = true
         setBackgroundImage(UIImage(), forBarPosition: .Any, barMetrics: .Default)

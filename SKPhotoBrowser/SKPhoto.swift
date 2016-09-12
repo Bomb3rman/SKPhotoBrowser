@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Photos
 
 @objc public protocol SKPhotoProtocol: NSObjectProtocol {
     var underlyingImage: UIImage! { get }
@@ -14,6 +15,7 @@ import UIKit
     var captionDetail: String! { get }
     var index: Int { get set}
     var contentMode: UIViewContentMode { get set }
+    var videoURL: NSURL! { get }
     func loadUnderlyingImageAndNotify()
     func checkCache()
 }
@@ -28,7 +30,8 @@ public class SKPhoto: NSObject, SKPhotoProtocol {
     public var captionTitle: String!
     public var captionDetail: String!
     public var index: Int = 0
-
+    public var videoURL: NSURL!
+    
     override init() {
         super.init()
     }
@@ -47,6 +50,12 @@ public class SKPhoto: NSObject, SKPhotoProtocol {
         self.init()
         photoURL = url
         underlyingImage = holder
+    }
+    
+    convenience init(videoURL: NSURL) {
+        self.init()
+        self.videoURL = videoURL
+        underlyingImage = SKPhoto.videoThumb(videoURL)
     }
     
     public func checkCache() {
@@ -131,4 +140,25 @@ extension SKPhoto {
     public static func photoWithImageURL(url: String, holder: UIImage?) -> SKPhoto {
         return SKPhoto(url: url, holder: holder)
     }
+    
+    public static func photoWithVideoURL(videoURL: NSURL) -> SKPhoto {
+        return SKPhoto(videoURL: videoURL)
+    }
+    
+    public static func videoThumb(URL: NSURL) -> UIImage? {
+        let avasset = AVURLAsset(URL: URL)
+        let generator = AVAssetImageGenerator(asset: avasset)
+        generator.appliesPreferredTrackTransform = true
+        
+        var time = avasset.duration
+        time.value = min(time.value, 2)
+        
+        do {
+            let imageRef = try generator.copyCGImageAtTime(time, actualTime: nil)
+            return UIImage(CGImage: imageRef)
+        } catch {
+            return nil
+        }
+    }
+
 }

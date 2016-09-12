@@ -18,6 +18,8 @@ class SKToolbar: UIToolbar {
     var toolNextButton: UIBarButtonItem!
     var toolActionButton: UIBarButtonItem!
     var toolDeleteButton: UIBarButtonItem!
+    var toolPlayButton: UIBarButtonItem!
+    var toolPauseButton: UIBarButtonItem!
     
     private weak var browser: SKPhotoBrowser?
     
@@ -39,6 +41,8 @@ class SKToolbar: UIToolbar {
         setupCaptionButton()
         setupActionButton()
         setupDeleteButton()
+        setupPlayButton()
+        setupPauseButton()
         setupToolbar()
     }
     
@@ -64,11 +68,15 @@ class SKToolbar: UIToolbar {
     
         toolCaptionButton.customView?.frame.size = sizeForCaptionViewAtOrientation()
     }
+    
+    func updateButtons() {
+        setupToolbar()
+    }
 }
 
 private extension SKToolbar {
     func setupApperance() {
-        backgroundColor = .clearColor()
+        backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.6)
         clipsToBounds = true
         translucent = true
         setBackgroundImage(UIImage(), forToolbarPosition: .Any, barMetrics: .Default)
@@ -90,23 +98,37 @@ private extension SKToolbar {
         }
         
         items.append(flexSpace)
-        if browser.numberOfPhotos > 1 && SKPhotoBrowserOptions.displayBackAndForwardButton {
-            items.append(toolPreviousButton)
-        }
-        if SKPhotoBrowserOptions.displayCounterLabel {
+        
+        func showCaption() {
+            if browser.numberOfPhotos > 1 && SKPhotoBrowserOptions.displayBackAndForwardButton {
+                items.append(toolPreviousButton)
+            }
+            
             items.append(flexSpace)
             items.append(toolCaptionButton)
             items.append(flexSpace)
+            
+            if browser.numberOfPhotos > 1 && SKPhotoBrowserOptions.displayBackAndForwardButton {
+                items.append(toolNextButton)
+            }
+        }
+        
+        if let page = browser.pageDisplayedAtIndex(browser.currentPageIndex) {
+            if page.isPlayingVideo() {
+                items.append(toolPauseButton)
+            } else if page.isPausedVideo() {
+                items.append(toolPlayButton)
+            } else {
+                showCaption()
+            }
         } else {
-            items.append(flexSpace)
+            showCaption()
         }
-        if browser.numberOfPhotos > 1 && SKPhotoBrowserOptions.displayBackAndForwardButton {
-            items.append(toolNextButton)
-        }
+        
         items.append(flexSpace)
-
+        
         if SKPhotoBrowserOptions.displayDeleteButton {
-             items.append(toolDeleteButton)
+            items.append(toolDeleteButton)
         } else if SKPhotoBrowserOptions.displayAction {
             items.append(toolActionButton)
         }
@@ -139,6 +161,16 @@ private extension SKToolbar {
     func setupDeleteButton() {
         toolDeleteButton = UIBarButtonItem(barButtonSystemItem: .Trash, target: browser, action: #selector(SKPhotoBrowser.deleteButtonPressed))
         toolDeleteButton.tintColor = .whiteColor()
+    }
+    
+    func setupPlayButton() {
+        toolPlayButton = UIBarButtonItem(barButtonSystemItem: .Play, target: browser, action: #selector(SKPhotoBrowser.playButtonPressed))
+        toolPlayButton.tintColor = .whiteColor()
+    }
+    
+    func setupPauseButton() {
+        toolPauseButton = UIBarButtonItem(barButtonSystemItem: .Pause, target: browser, action: #selector(SKPhotoBrowser.pauseButtonPressed))
+        toolPauseButton.tintColor = .whiteColor()
     }
     
     func sizeForCaptionViewAtOrientation() -> CGSize {

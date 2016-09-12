@@ -28,6 +28,8 @@
 		89FC5DBB1D54A04900F1BE52 /* FromWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89FC5DBA1D54A04900F1BE52 /* FromWebViewController.swift */; };
 		A6A7B7801C9578E30025AC07 /* SKPhotoBrowser.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8909B5711BC792570060A053 /* SKPhotoBrowser.framework */; };
 		A6A7B7811C9578E30025AC07 /* SKPhotoBrowser.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8909B5711BC792570060A053 /* SKPhotoBrowser.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		DA8D4C771D8718D100CBDFF0 /* video0.mov in Resources */ = {isa = PBXBuildFile; fileRef = DA8D4C751D8718D100CBDFF0 /* video0.mov */; };
+		DA8D4C781D8718D100CBDFF0 /* video1.mov in Resources */ = {isa = PBXBuildFile; fileRef = DA8D4C761D8718D100CBDFF0 /* video1.mov */; };
 		EDB132988D18A9933DC53935 /* Pods_SKPhotoBrowserExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3EE84F006C03FABF0341F47 /* Pods_SKPhotoBrowserExample.framework */; };
 /* End PBXBuildFile section */
 
@@ -95,6 +97,8 @@
 		89FC5DBA1D54A04900F1BE52 /* FromWebViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FromWebViewController.swift; sourceTree = "<group>"; };
 		AEEC98E630F6131BA1BD59D6 /* Pods-SKPhotoBrowserExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SKPhotoBrowserExample.release.xcconfig"; path = "Pods/Target Support Files/Pods-SKPhotoBrowserExample/Pods-SKPhotoBrowserExample.release.xcconfig"; sourceTree = "<group>"; };
 		C3EE84F006C03FABF0341F47 /* Pods_SKPhotoBrowserExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SKPhotoBrowserExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		DA8D4C751D8718D100CBDFF0 /* video0.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = video0.mov; sourceTree = "<group>"; };
+		DA8D4C761D8718D100CBDFF0 /* video1.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = video1.mov; sourceTree = "<group>"; };
 		DDBCAB5649DE4BEEE3605EB7 /* Pods-SKPhotoBrowserExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SKPhotoBrowserExample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SKPhotoBrowserExample/Pods-SKPhotoBrowserExample.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -165,8 +169,6 @@
 			children = (
 				8909B5751BC792DC0060A053 /* image0.jpg */,
 				8909B5761BC792DC0060A053 /* image1.jpg */,
-				8909B5771BC792DC0060A053 /* image10.jpg */,
-				8909B5781BC792DC0060A053 /* image12.jpg */,
 				8909B5791BC792DC0060A053 /* image2.jpg */,
 				8909B57A1BC792DC0060A053 /* image3.jpg */,
 				8909B57B1BC792DC0060A053 /* image4.jpg */,
@@ -175,6 +177,10 @@
 				8909B57E1BC792DC0060A053 /* image7.jpg */,
 				8909B57F1BC792DC0060A053 /* image8.jpg */,
 				8909B5801BC792DC0060A053 /* image9.jpg */,
+				8909B5771BC792DC0060A053 /* image10.jpg */,
+				8909B5781BC792DC0060A053 /* image12.jpg */,
+				DA8D4C751D8718D100CBDFF0 /* video0.mov */,
+				DA8D4C761D8718D100CBDFF0 /* video1.mov */,
 			);
 			path = SampleImages;
 			sourceTree = "<group>";
@@ -255,7 +261,7 @@
 		8909B54F1BC792150060A053 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0700;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = suzuki_keishi;
 				TargetAttributes = {
 					8909B5561BC792150060A053 = {
@@ -312,6 +318,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				8909B58B1BC792DC0060A053 /* image8.jpg in Resources */,
+				DA8D4C771D8718D100CBDFF0 /* video0.mov in Resources */,
+				DA8D4C781D8718D100CBDFF0 /* video1.mov in Resources */,
 				8909B5861BC792DC0060A053 /* image3.jpg in Resources */,
 				8909B5811BC792DC0060A053 /* image0.jpg in Resources */,
 				8909B58A1BC792DC0060A053 /* image7.jpg in Resources */,
@@ -434,8 +442,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -479,8 +489,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -499,6 +511,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -508,10 +521,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = DDBCAB5649DE4BEEE3605EB7 /* Pods-SKPhotoBrowserExample.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = 7TVX6SXZ4T;
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				INFOPLIST_FILE = SKPhotoBrowserExample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.keishi.suzuki.aSKPhotoBrowserExample.omair;
@@ -524,10 +537,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = AEEC98E630F6131BA1BD59D6 /* Pods-SKPhotoBrowserExample.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = 7TVX6SXZ4T;
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				INFOPLIST_FILE = SKPhotoBrowserExample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.keishi.suzuki.aSKPhotoBrowserExample.omair;

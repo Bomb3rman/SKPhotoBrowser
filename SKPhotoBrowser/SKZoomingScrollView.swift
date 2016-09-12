@@ -23,6 +23,8 @@ public class SKZoomingScrollView: UIScrollView {
     private weak var photoBrowser: SKPhotoBrowser?
     private var tapView: SKDetectingView!
     private var indicatorView: SKIndicatorView!
+    private var videoPlayer: SKVideoPlayer!
+    private var playButton: UIButton!
     
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -42,6 +44,8 @@ public class SKZoomingScrollView: UIScrollView {
     
     deinit {
         photoBrowser = nil
+        videoPlayer = nil
+        playButton = nil
     }
     
     func setup() {
@@ -72,6 +76,43 @@ public class SKZoomingScrollView: UIScrollView {
         autoresizingMask = [.FlexibleWidth, .FlexibleTopMargin, .FlexibleBottomMargin, .FlexibleRightMargin, .FlexibleLeftMargin]
     }
     
+    func displayingVideo() -> Bool {
+        return photo.videoURL != nil
+    }
+    
+    func isPlayingVideo() -> Bool {
+        guard let videoPlayer = videoPlayer else {
+            return false
+        }
+        
+        return videoPlayer.isPlaying()
+    }
+    
+    func playVideo() {
+        guard let videoPlayer = videoPlayer else {
+            return
+        }
+        
+        if !playButton.hidden {
+            playButton.hidden = true
+        }
+        videoPlayer.play()
+    }
+    
+    func pauseVideo() {
+        guard let videoPlayer = videoPlayer else {
+            return
+        }
+        videoPlayer.pause()
+    }
+    
+    func isPausedVideo() -> Bool {
+        guard let videoPlayer = videoPlayer else {
+            return false
+        }
+        return !videoPlayer.isPlaying()
+    }
+    
     // MARK: - override
     
     public override func layoutSubviews() {
@@ -99,6 +140,16 @@ public class SKZoomingScrollView: UIScrollView {
         // Center
         if !CGRectEqualToRect(photoImageView.frame, frameToCenter) {
             photoImageView.frame = frameToCenter
+        }
+        
+        // Video Player
+        if let videoPlayer = self.videoPlayer {
+            videoPlayer.frame = self.bounds
+        }
+        
+        // Play Button
+        if let playButton = self.playButton {
+            playButton.center = CGPoint(x: frame.width/2, y: frame.height/2)
         }
     }
     
@@ -153,14 +204,26 @@ public class SKZoomingScrollView: UIScrollView {
         
         // reset position
         photoImageView.frame = CGRect(x: 0, y: 0, width: photoImageView.frame.size.width, height: photoImageView.frame.size.height)
+        
+        // Disable scrolling initially until the first pinch to fix issues with swiping on an initally zoomed in photo
+        self.scrollEnabled = false
+        
+        // If it's a video then disable zooming
+        if displayingVideo() {
+            self.maximumZoomScale = self.zoomScale;
+            self.minimumZoomScale = self.zoomScale;
+        }
+        
         setNeedsLayout()
     }
     
     public func prepareForReuse() {
         photo = nil
-        if captionView != nil {
-            captionView.removeFromSuperview()
-            captionView = nil 
+        videoPlayer = nil
+        
+        if playButton != nil {
+            playButton.removeFromSuperview()
+            playButton = nil
         }
     }
     
@@ -210,6 +273,16 @@ public class SKZoomingScrollView: UIScrollView {
             contentSize = photoImageViewFrame.size
             
             setMaxMinZoomScalesForCurrentBounds()
+            
+            if displayingVideo() && playButton == nil {
+                playButton = UIButton(type: .Custom)
+                playButton.setImage(UIImage(named: "SKPhotoBrowser.bundle/images/btn_common_play_blk", inBundle: NSBundle(forClass: SKPhotoBrowser.self), compatibleWithTraitCollection: nil), forState: .Normal)
+                playButton.setImage(UIImage(named: "SKPhotoBrowser.bundle/images/btn_common_play_tap_blk", inBundle: NSBundle(forClass: SKPhotoBrowser.self), compatibleWithTraitCollection: nil), forState: .Highlighted)
+                playButton.addTarget(self, action: #selector(playButtonPressed), forControlEvents: .TouchUpInside)
+                playButton.sizeToFit()
+                playButton.userInteractionEnabled = true
+                addSubview(playButton)
+            }
         }
         setNeedsLayout()
     }
@@ -219,6 +292,19 @@ public class SKZoomingScrollView: UIScrollView {
     }
     
     // MARK: - handle tap
+    func playButtonPressed() {
+        if videoPlayer == nil {
+            videoPlayer = SKVideoPlayer(URL: photo.videoURL)
+            videoPlayer.delegate = self
+            layer.addSublayer(videoPlayer.layer())
+        }
+        
+        playButton.hidden = true
+        
+        videoPlayer.play()
+        photoBrowser?.toolbar.updateButtons()
+    }
+    
     public func handleDoubleTap(touchPoint: CGPoint) {
         if let photoBrowser = photoBrowser {
             NSObject.cancelPreviousPerformRequestsWithTarget(photoBrowser)
@@ -252,6 +338,7 @@ extension SKZoomingScrollView: UIScrollViewDelegate {
     }
     
     public func scrollViewWillBeginZooming(scrollView: UIScrollView, withView view: UIView?) {
+        self.scrollEnabled = true
         photoBrowser?.cancelControlHiding()
     }
     
@@ -287,7 +374,6 @@ extension SKZoomingScrollView: SKDetectingViewDelegate {
     }
 }
 
-
 // MARK: - SKDetectingImageViewDelegate
 
 extension SKZoomingScrollView: SKDetectingImageViewDelegate {
@@ -303,7 +389,21 @@ extension SKZoomingScrollView: SKDetectingImageViewDelegate {
     }
     
     func handleImageViewDoubleTap(touchPoint: CGPoint) {
+        if displayingVideo() {
+            return
+        }
         handleDoubleTap(touchPoint)
+    }
+}
+
+extension SKZoomingScrollView: SKVideoPlayerDelegate {
+    func playerCurrentTimeDidChange(elapsedTime: Float64, videoPlayer: SKVideoPlayer) {
+        print("elapsedTime: \(String(format: "%02d:%02d", ((lround(elapsedTime) / 60) % 60), lround(elapsedTime) % 60))")
+    }
+    
+    func playerPlaybackDidEnd(videoPlayer: SKVideoPlayer) {
+        playButton.hidden = false
+        photoBrowser?.toolbar.updateButtons()
     }
 }
 

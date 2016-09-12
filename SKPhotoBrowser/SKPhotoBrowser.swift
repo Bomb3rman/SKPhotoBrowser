@@ -16,7 +16,7 @@ public class SKPhotoBrowser: UIViewController {
     let pageIndexTagOffset: Int = 1000
     
     private var navigationBar: SKNavigationBar!
-    private var toolbar: SKToolbar!
+    internal var toolbar: SKToolbar!
     
     // actions
     private var activityViewController: UIActivityViewController!
@@ -154,7 +154,7 @@ public class SKPhotoBrowser: UIViewController {
         }
         
         dispatch_async(dispatch_get_main_queue(), {
-            guard let page = self.pagingScrollView.pageDisplayingAtPhoto(photo), photo = page.photo else {
+            guard let page = self.pagingScrollView.pageDisplayingAtPhoto(photo), let photo = page.photo else {
                 return
             }
             
@@ -210,6 +210,11 @@ public class SKPhotoBrowser: UIViewController {
         
         dismissViewControllerAnimated(!animated) {
             completion?()
+            if let page = self.pageDisplayedAtIndex(self.currentPageIndex) {
+                if page.isPlayingVideo() {
+                    page.pauseVideo()
+                }
+            }
             self.delegate?.didDismissAtPageIndex?(self.currentPageIndex)
         }
     }
@@ -497,6 +502,20 @@ internal extension SKPhotoBrowser {
             
         } else {
             popupShare()
+        }
+    }
+    
+    func playButtonPressed() {
+        if let page = pageDisplayedAtIndex(currentPageIndex) {
+            page.playVideo()
+            toolbar.updateButtons()
+        }
+    }
+    
+    func pauseButtonPressed() {
+        if let page = pageDisplayedAtIndex(currentPageIndex) {
+            page.pauseVideo()
+            toolbar.updateButtons()
         }
     }
 }
