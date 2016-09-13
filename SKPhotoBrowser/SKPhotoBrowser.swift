@@ -15,7 +15,7 @@ public class SKPhotoBrowser: UIViewController {
     
     let pageIndexTagOffset: Int = 1000
     
-    private var navigationBar: SKNavigationBar!
+    internal var navigationBar: SKNavigationBar!
     internal var toolbar: SKToolbar!
     
     // actions
@@ -102,6 +102,8 @@ public class SKPhotoBrowser: UIViewController {
         modalTransitionStyle = .CrossDissolve
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(self.handleSKPhotoLoadingDidEndNotification(_:)), name: SKPHOTO_LOADING_DID_END_NOTIFICATION, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(self.videoScrubberStart), name: SKVideoScrubber.Start, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(self.videoScrubberEnd), name: SKVideoScrubber.End, object: nil)
     }
     
     // MARK: - override
@@ -180,8 +182,6 @@ public class SKPhotoBrowser: UIViewController {
     public func performLayout() {
         isPerformingLayout = true
         
-        updateNavigationBarAndToolBar()
-        
         // reset local cache
         pagingScrollView.reload()
         
@@ -190,6 +190,8 @@ public class SKPhotoBrowser: UIViewController {
         pagingScrollView.tilePages()
         
         delegate?.didShowPhotoAtIndex?(currentPageIndex)
+        
+        updateNavigationBarAndToolBar()
         
         isPerformingLayout = false
     }
@@ -508,14 +510,12 @@ internal extension SKPhotoBrowser {
     func playButtonPressed() {
         if let page = pageDisplayedAtIndex(currentPageIndex) {
             page.playVideo()
-            toolbar.updateButtons()
         }
     }
     
     func pauseButtonPressed() {
         if let page = pageDisplayedAtIndex(currentPageIndex) {
             page.pauseVideo()
-            toolbar.updateButtons()
         }
     }
 }
@@ -619,6 +619,9 @@ extension SKPhotoBrowser: UIScrollViewDelegate {
         currentPageIndex = min(max(Int(floor(visibleBounds.midX / visibleBounds.width)), 0), numberOfPhotos - 1)
         
         if currentPageIndex != previousCurrentPage {
+            if let page = pageDisplayedAtIndex(currentPageIndex) {
+                page.viewWillAppear()
+            }
             delegate?.didShowPhotoAtIndex?(currentPageIndex)
             updateNavigationBarAndToolBar()
         }
@@ -633,5 +636,17 @@ extension SKPhotoBrowser: UIScrollViewDelegate {
     
     public func scrollViewDidEndScrollingAnimation(scrollView: UIScrollView) {
         isEndAnimationByToolBar = true
+    }
+}
+
+// MARK: - SKVideoScrubber Notifcations
+
+extension SKPhotoBrowser {
+    func videoScrubberStart() {
+        setControlsHidden(false, animated: true, permanent: true)
+    }
+    
+    func videoScrubberEnd() {
+        hideControlsAfterDelay()
     }
 }

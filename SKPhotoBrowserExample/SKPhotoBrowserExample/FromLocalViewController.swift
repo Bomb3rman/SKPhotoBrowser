@@ -145,7 +145,6 @@ private extension FromLocalViewController {
                 return photo
             } else {
                 let path = NSBundle.mainBundle().pathForResource("video\(i%10)", ofType:"mov")
-                print(path)
                 let photo = SKPhoto.photoWithVideoURL(NSURL(fileURLWithPath: path!, isDirectory: false))
                 photo.captionTitle = captionTitle[i%10]
                 photo.captionDetail = captionDetail[i%10]

@@ -61,6 +61,8 @@ class SKToolbar: UIToolbar {
         
         toolPreviousButton.enabled = (currentPageIndex > 0)
         toolNextButton.enabled = (currentPageIndex < browser.numberOfPhotos - 1)
+    
+        setupToolbar()
     }
     
     override func layoutSubviews() {
@@ -114,10 +116,14 @@ private extension SKToolbar {
         }
         
         if let page = browser.pageDisplayedAtIndex(browser.currentPageIndex) {
-            if page.isPlayingVideo() {
-                items.append(toolPauseButton)
-            } else if page.isPausedVideo() {
-                items.append(toolPlayButton)
+            if page.displayPlaybackControls {
+                if page.isPlayingVideo() {
+                    items.append(toolPauseButton)
+                } else if page.isPausedVideo() {
+                    items.append(toolPlayButton)
+                } else {
+                    showCaption()
+                }
             } else {
                 showCaption()
             }

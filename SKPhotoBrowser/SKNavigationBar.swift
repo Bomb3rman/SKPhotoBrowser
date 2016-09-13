@@ -12,6 +12,7 @@ class SKNavigationBar: UINavigationBar {
 
     private weak var browser: SKPhotoBrowser?
     private var navigationItem: UINavigationItem!
+    private var videoScrubber: SKVideoScrubber!
     
     var closeButton: UIBarButtonItem!
     
@@ -32,16 +33,46 @@ class SKNavigationBar: UINavigationBar {
         
         setupAppearence()
         setupCloseButton()
+        videoScrubber = SKVideoScrubber(frame: frameForVideoScrubber())
     }
     
     func updateTitle(currentPageIndex: Int) {
         guard let browser = browser else { return }
         
-        if browser.numberOfPhotos > 1 {
-            navigationItem.title = "\(currentPageIndex + 1) / \(browser.numberOfPhotos)"
-        } else {
-            navigationItem.title = nil
+        func showCounterTitle() {
+            if SKPhotoBrowserOptions.displayCounterLabel {
+                navigationItem.titleView = nil
+                if browser.numberOfPhotos > 1 {
+                    navigationItem.title = "\(currentPageIndex + 1) / \(browser.numberOfPhotos)"
+                } else {
+                    navigationItem.title = nil
+                }
+            }
         }
+        
+        if let page = browser.pageDisplayedAtIndex(currentPageIndex) {
+            if page.displayingVideo() {
+                videoScrubber.duration = Float(page.videoDuration())
+                videoScrubber.frame = frameForVideoScrubber()
+                
+                navigationItem.titleView = videoScrubber
+                navigationItem.title = nil
+            } else {
+                showCounterTitle()
+            }
+        } else {
+            showCounterTitle()
+        }
+    }
+    
+    func updateScrubber(progress: Float, currentTime: Float) {
+        videoScrubber.progress = progress
+        videoScrubber.currentTime = currentTime
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        navigationItem.titleView?.frame = frameForVideoScrubber()
     }
 }
 
@@ -61,5 +92,9 @@ private extension SKNavigationBar {
             closeButton.tintColor = .whiteColor()
             navigationItem.leftBarButtonItem = closeButton
         }
+    }
+    
+    func frameForVideoScrubber() -> CGRect {
+        return CGRect(x: 55, y: bounds.height/2, width: bounds.size.width - 80, height: 20)
     }
 }

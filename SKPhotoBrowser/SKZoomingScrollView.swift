@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AVFoundation
 
 public class SKZoomingScrollView: UIScrollView {
     var captionView: SKCaptionView!
@@ -18,6 +19,7 @@ public class SKZoomingScrollView: UIScrollView {
             }
         }
     }
+    var displayPlaybackControls = false
     
     private(set) var photoImageView: SKDetectingImageView!
     private weak var photoBrowser: SKPhotoBrowser?
@@ -74,36 +76,40 @@ public class SKZoomingScrollView: UIScrollView {
         showsVerticalScrollIndicator = false
         decelerationRate = UIScrollViewDecelerationRateFast
         autoresizingMask = [.FlexibleWidth, .FlexibleTopMargin, .FlexibleBottomMargin, .FlexibleRightMargin, .FlexibleLeftMargin]
+    
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(scrubberStart), name: SKVideoScrubber.Start, object: nil)
+    }
+    
+    func viewWillAppear() {
+        guard let videoPlayer = videoPlayer else {
+            return
+        }
+        videoPlayer.reset()
+        displayPlaybackControls = false
+        
+        if let playButton = playButton {
+            playButton.hidden = false
+            bringSubviewToFront(playButton)
+        }
     }
     
     func displayingVideo() -> Bool {
         return photo.videoURL != nil
     }
     
+    func videoDuration() -> Float64 {
+        if !displayingVideo() {
+            return 0
+        }
+        let asset = AVURLAsset(URL: photo.videoURL)
+        return CMTimeGetSeconds(asset.duration)
+    }
+    
     func isPlayingVideo() -> Bool {
         guard let videoPlayer = videoPlayer else {
             return false
         }
-        
         return videoPlayer.isPlaying()
-    }
-    
-    func playVideo() {
-        guard let videoPlayer = videoPlayer else {
-            return
-        }
-        
-        if !playButton.hidden {
-            playButton.hidden = true
-        }
-        videoPlayer.play()
-    }
-    
-    func pauseVideo() {
-        guard let videoPlayer = videoPlayer else {
-            return
-        }
-        videoPlayer.pause()
     }
     
     func isPausedVideo() -> Bool {
@@ -111,6 +117,30 @@ public class SKZoomingScrollView: UIScrollView {
             return false
         }
         return !videoPlayer.isPlaying()
+    }
+    
+    func playVideo() {
+        if videoPlayer == nil {
+            initVideoPlayer()
+        }
+        
+        guard let videoPlayer = self.videoPlayer else {
+            return
+        }
+        
+        playButton.hidden = true
+        displayPlaybackControls = true
+        
+        videoPlayer.play()
+        photoBrowser?.toolbar.updateButtons()
+    }
+    
+    func pauseVideo() {
+        guard let videoPlayer = videoPlayer else {
+            return
+        }
+        videoPlayer.pause()
+        photoBrowser?.toolbar.updateButtons()
     }
     
     // MARK: - override
@@ -219,7 +249,11 @@ public class SKZoomingScrollView: UIScrollView {
     
     public func prepareForReuse() {
         photo = nil
-        videoPlayer = nil
+        
+        if videoPlayer != nil {
+            videoPlayer.pause()
+            videoPlayer = nil
+        }
         
         if playButton != nil {
             playButton.removeFromSuperview()
@@ -278,7 +312,7 @@ public class SKZoomingScrollView: UIScrollView {
                 playButton = UIButton(type: .Custom)
                 playButton.setImage(UIImage(named: "SKPhotoBrowser.bundle/images/btn_common_play_blk", inBundle: NSBundle(forClass: SKPhotoBrowser.self), compatibleWithTraitCollection: nil), forState: .Normal)
                 playButton.setImage(UIImage(named: "SKPhotoBrowser.bundle/images/btn_common_play_tap_blk", inBundle: NSBundle(forClass: SKPhotoBrowser.self), compatibleWithTraitCollection: nil), forState: .Highlighted)
-                playButton.addTarget(self, action: #selector(playButtonPressed), forControlEvents: .TouchUpInside)
+                playButton.addTarget(self, action: #selector(playVideo), forControlEvents: .TouchUpInside)
                 playButton.sizeToFit()
                 playButton.userInteractionEnabled = true
                 addSubview(playButton)
@@ -292,18 +326,6 @@ public class SKZoomingScrollView: UIScrollView {
     }
     
     // MARK: - handle tap
-    func playButtonPressed() {
-        if videoPlayer == nil {
-            videoPlayer = SKVideoPlayer(URL: photo.videoURL)
-            videoPlayer.delegate = self
-            layer.addSublayer(videoPlayer.layer())
-        }
-        
-        playButton.hidden = true
-        
-        videoPlayer.play()
-        photoBrowser?.toolbar.updateButtons()
-    }
     
     public func handleDoubleTap(touchPoint: CGPoint) {
         if let photoBrowser = photoBrowser {
@@ -397,12 +419,20 @@ extension SKZoomingScrollView: SKDetectingImageViewDelegate {
 }
 
 extension SKZoomingScrollView: SKVideoPlayerDelegate {
-    func playerCurrentTimeDidChange(elapsedTime: Float64, videoPlayer: SKVideoPlayer) {
-        print("elapsedTime: \(String(format: "%02d:%02d", ((lround(elapsedTime) / 60) % 60), lround(elapsedTime) % 60))")
+    func playerCurrentTimeDidChange(progress: Float, currentTime: Float, videoPlayer: SKVideoPlayer) {
+        photoBrowser?.navigationBar.updateScrubber(progress, currentTime: currentTime)
     }
     
     func playerPlaybackDidEnd(videoPlayer: SKVideoPlayer) {
         playButton.hidden = false
+        photoBrowser?.toolbar.updateButtons()
+    }
+    
+    func playerStarted(videoPlayer: SKVideoPlayer) {
+        photoBrowser?.toolbar.updateButtons()
+    }
+    
+    func playerPaused(videoPlayer: SKVideoPlayer) {
         photoBrowser?.toolbar.updateButtons()
     }
 }
@@ -436,5 +466,24 @@ private extension SKZoomingScrollView {
         let y = touchPoint.y - (w / max(UIScreen.mainScreen().scale, 2.0))
         
         return CGRect(x: x, y: y, width: w, height: h)
+    }
+    
+    func initVideoPlayer() {
+        guard let photo = self.photo else {
+            return
+        }
+        
+        videoPlayer = SKVideoPlayer(URL: photo.videoURL)
+        videoPlayer.delegate = self
+        layer.addSublayer(videoPlayer.layer())
+    }
+}
+
+private extension SKZoomingScrollView {
+    
+    @objc func scrubberStart() {
+        if videoPlayer == nil {
+            initVideoPlayer()
+        }
     }
 }
