@@ -182,7 +182,7 @@ public class SKZoomingScrollView: UIScrollView {
         }
         
         if let image = photo.underlyingImage {
-            
+            /*
             // create padding
             let width: CGFloat = image.size.width + SKPhotoBrowserOptions.imagePaddingX
             let height: CGFloat = image.size.height + SKPhotoBrowserOptions.imagePaddingY;
@@ -194,9 +194,10 @@ public class SKZoomingScrollView: UIScrollView {
             UIGraphicsPopContext();
             let imageWithPadding = UIGraphicsGetImageFromCurrentImageContext();
             UIGraphicsEndImageContext();
-
+             */
+            
             // image
-            photoImageView.image = imageWithPadding
+            photoImageView.image = image
             photoImageView.contentMode = photo.contentMode
             photoImageView.backgroundColor = SKPhotoBrowserOptions.backgroundColor
             
