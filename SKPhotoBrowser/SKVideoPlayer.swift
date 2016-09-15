@@ -10,10 +10,10 @@ import Foundation
 import AVFoundation
 
 protocol SKVideoPlayerDelegate: class {
-    func playerCurrentTimeDidChange(progress: Float, currentTime: Float, videoPlayer: SKVideoPlayer)
-    func playerPlaybackDidEnd(videoPlayer: SKVideoPlayer)
-    func playerStarted(videoPlayer: SKVideoPlayer)
-    func playerPaused(videoPlayer: SKVideoPlayer)
+    func playerCurrentTimeDidChange(_ progress: Float, currentTime: Float, videoPlayer: SKVideoPlayer)
+    func playerPlaybackDidEnd(_ videoPlayer: SKVideoPlayer)
+    func playerStarted(_ videoPlayer: SKVideoPlayer)
+    func playerPaused(_ videoPlayer: SKVideoPlayer)
 }
 
 class SKVideoPlayer {
@@ -26,32 +26,32 @@ class SKVideoPlayer {
         }
     }
     
-    private var asset: AVURLAsset!
-    private var duration: Float64!
-    private var playerItem: AVPlayerItem!
-    private var player: AVPlayer!
-    private var playerLayer: AVPlayerLayer!
-    private var timeObserver: AnyObject!
-    private var isSeekInProgress = false
-    private var chaseTime = kCMTimeZero
+    fileprivate var asset: AVURLAsset!
+    fileprivate var duration: Float64!
+    fileprivate var playerItem: AVPlayerItem!
+    fileprivate var player: AVPlayer!
+    fileprivate var playerLayer: AVPlayerLayer!
+    fileprivate var timeObserver: AnyObject!
+    fileprivate var isSeekInProgress = false
+    fileprivate var chaseTime = kCMTimeZero
     
-    init(URL: NSURL) {
-        asset = AVURLAsset(URL: URL)
+    init(URL: Foundation.URL) {
+        asset = AVURLAsset(url: URL)
         duration = CMTimeGetSeconds(asset.duration)
         playerItem = AVPlayerItem(asset: asset)
         player = AVPlayer(playerItem: playerItem)
-        player.actionAtItemEnd = .Pause
+        player.actionAtItemEnd = .pause
         playerLayer = AVPlayerLayer(player: player)
         
-        self.timeObserver = self.player.addPeriodicTimeObserverForInterval(CMTimeMake(1, 10), queue: dispatch_get_main_queue()) { [weak self] (elapsedTime: CMTime) -> Void in
+        self.timeObserver = self.player.addPeriodicTimeObserver(forInterval: CMTimeMake(1, 10), queue: DispatchQueue.main) { [weak self] (elapsedTime: CMTime) -> Void in
             guard let strongSelf = self else { return }
             strongSelf.observeTime(elapsedTime)
-        }
+        } as AnyObject!
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(playerItemDidPlayToEndTime), name: AVPlayerItemDidPlayToEndTimeNotification, object: self.playerItem)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(scrubberStart), name: SKVideoScrubber.Start, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(scrubberEnd), name: SKVideoScrubber.End, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(scrubberValueChanged), name: SKVideoScrubber.ValueChanged, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(playerItemDidPlayToEndTime), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.playerItem)
+        NotificationCenter.default.addObserver(self, selector: #selector(scrubberStart), name: NSNotification.Name(rawValue: SKVideoScrubber.Start), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(scrubberEnd), name: NSNotification.Name(rawValue: SKVideoScrubber.End), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(scrubberValueChanged), name: NSNotification.Name(rawValue: SKVideoScrubber.ValueChanged), object: nil)
     }
         
     deinit {
@@ -62,7 +62,7 @@ class SKVideoPlayer {
     
         delegate = nil
     
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
         
     func layer() -> CALayer {
@@ -81,7 +81,7 @@ class SKVideoPlayer {
     
     func reset() {
         self.player.pause()
-        player.seekToTime(kCMTimeZero, completionHandler: { (finished: Bool) in })
+        player.seek(to: kCMTimeZero, completionHandler: { (finished: Bool) in })
     }
         
     func isPlaying() -> Bool {
@@ -92,13 +92,13 @@ class SKVideoPlayer {
     }
     
     @objc func playerItemDidPlayToEndTime() {
-        player.seekToTime(kCMTimeZero, completionHandler: { (finished: Bool) in
+        player.seek(to: kCMTimeZero, completionHandler: { (finished: Bool) in
             self.player.pause()
             self.delegate?.playerPlaybackDidEnd(self)
         })
     }
     
-    private func observeTime(elapsedTime: CMTime) {
+    fileprivate func observeTime(_ elapsedTime: CMTime) {
         let duration = CMTimeGetSeconds(player.currentItem!.duration)
         if duration.isFinite {
             let currentTime  = CMTimeGetSeconds(player.currentTime())
@@ -117,11 +117,11 @@ private extension SKVideoPlayer {
     }
     
     @objc func scrubberEnd() {
-        NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: #selector(play), userInfo: nil, repeats: false)
+        Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(play), userInfo: nil, repeats: false)
     }
     
-    @objc func scrubberValueChanged(notification: NSNotification) {
-        if let userInfo = notification.userInfo, value = userInfo[SKVideoScrubber.ValueKey] as? Float {
+    @objc func scrubberValueChanged(_ notification: Notification) {
+        if let userInfo = (notification as NSNotification).userInfo, let value = userInfo[SKVideoScrubber.ValueKey] as? Float {
             let seconds = duration * Float64(value)
             let seekToTime = CMTimeMake(Int64(seconds), 1)
             stopPlayingAndSeekSmoothlyToTime(seekToTime)
@@ -130,7 +130,7 @@ private extension SKVideoPlayer {
 }
 
 private extension SKVideoPlayer {
-    func stopPlayingAndSeekSmoothlyToTime(newChaseTime: CMTime) {
+    func stopPlayingAndSeekSmoothlyToTime(_ newChaseTime: CMTime) {
         if CMTimeCompare(newChaseTime, chaseTime) != 0 {
             chaseTime = newChaseTime;
             if !isSeekInProgress {
@@ -140,9 +140,9 @@ private extension SKVideoPlayer {
     }
     
     func trySeekToChaseTime() {
-        if player.status == .Unknown {
+        if player.status == .unknown {
             // wait until item becomes ready (KVO player.currentItem.status)
-        } else if player.status == .ReadyToPlay {
+        } else if player.status == .readyToPlay {
             actuallySeekToTime()
         }
     }
@@ -150,7 +150,7 @@ private extension SKVideoPlayer {
     func actuallySeekToTime() {
         isSeekInProgress = true
         let seekTimeInProgress = chaseTime
-        player.seekToTime(seekTimeInProgress, toleranceBefore: kCMTimeZero,
+        player.seek(to: seekTimeInProgress, toleranceBefore: kCMTimeZero,
                           toleranceAfter: kCMTimeZero, completionHandler:
             { (isFinished:Bool) -> Void in
                 

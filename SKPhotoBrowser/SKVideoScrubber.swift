@@ -40,37 +40,37 @@ class SKVideoScrubber: UIView {
         }
     }
     
-    private var currentTimeLabel: UILabel!
-    private var remainingTimeLabel: UILabel!
-    private var slider: SKVideoSlider!
+    fileprivate var currentTimeLabel: UILabel!
+    fileprivate var remainingTimeLabel: UILabel!
+    fileprivate var slider: SKVideoSlider!
  
     override init(frame: CGRect) {
         super.init(frame: frame)
         
         currentTimeLabel = UILabel()
         currentTimeLabel.text = "00000"
-        currentTimeLabel.font = UIFont.systemFontOfSize(12)
-        currentTimeLabel.textColor = .whiteColor()
+        currentTimeLabel.font = UIFont.systemFont(ofSize: 12)
+        currentTimeLabel.textColor = .white
         currentTimeLabel.sizeToFit()
         addSubview(currentTimeLabel)
         
         remainingTimeLabel = UILabel()
         remainingTimeLabel.text = "00000"
-        remainingTimeLabel.font = UIFont.systemFontOfSize(12)
-        remainingTimeLabel.textColor = .whiteColor()
+        remainingTimeLabel.font = UIFont.systemFont(ofSize: 12)
+        remainingTimeLabel.textColor = .white
         remainingTimeLabel.sizeToFit()
         addSubview(remainingTimeLabel)
         
         slider = SKVideoSlider()
-        let sliderTrackImage = UIImage(named: "SKPhotoBrowser.bundle/images/btn_video_slider_handle", inBundle: NSBundle(forClass: SKPhotoBrowser.self), compatibleWithTraitCollection: nil)
+        let sliderTrackImage = UIImage(named: "SKPhotoBrowser.bundle/images/btn_video_slider_handle", in: Bundle(for: SKPhotoBrowser.self), compatibleWith: nil)
         
-        slider.addTarget(self, action: #selector(sliderValueChanged), forControlEvents: .ValueChanged)
-        slider.addTarget(self, action: #selector(sliderTouchBegin), forControlEvents: .TouchDown)
-        slider.addTarget(self, action: #selector(sliderTouchEnd), forControlEvents: [.TouchUpInside, .TouchUpOutside])
+        slider.addTarget(self, action: #selector(sliderValueChanged), for: .valueChanged)
+        slider.addTarget(self, action: #selector(sliderTouchBegin), for: .touchDown)
+        slider.addTarget(self, action: #selector(sliderTouchEnd), for: [.touchUpInside, .touchUpOutside])
         
-        slider.setThumbImage(sliderTrackImage, forState: .Normal)
-        slider.minimumTrackTintColor = .whiteColor()
-        slider.maximumTrackTintColor = .lightGrayColor()
+        slider.setThumbImage(sliderTrackImage, for: UIControlState())
+        slider.minimumTrackTintColor = .white
+        slider.maximumTrackTintColor = .lightGray
         
         addSubview(slider)
     }
@@ -96,24 +96,24 @@ class SKVideoScrubber: UIView {
 extension SKVideoScrubber {
     func sliderValueChanged() {
         let userInfo = [ SKVideoScrubber.ValueKey : slider.value ]
-        NSNotificationCenter.defaultCenter().postNotificationName(SKVideoScrubber.ValueChanged, object: nil, userInfo: userInfo)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: SKVideoScrubber.ValueChanged), object: nil, userInfo: userInfo)
     }
     
     func sliderTouchBegin() {
-        NSNotificationCenter.defaultCenter().postNotificationName(SKVideoScrubber.Start, object: nil)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: SKVideoScrubber.Start), object: nil)
     }
     
     func sliderTouchEnd() {
-        NSNotificationCenter.defaultCenter().postNotificationName(SKVideoScrubber.End, object: nil)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: SKVideoScrubber.End), object: nil)
     }
 }
 
 class SKVideoSlider: UISlider {
     
-    var thumbTouchSize : CGSize = CGSizeMake(50, 50)
+    var thumbTouchSize : CGSize = CGSize(width: 50, height: 50)
     
-    override func pointInside(point: CGPoint, withEvent event: UIEvent?) -> Bool {
-        let bounds = CGRectInset(self.bounds, -thumbTouchSize.width, -thumbTouchSize.height);
-        return CGRectContainsPoint(bounds, point);
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        let bounds = self.bounds.insetBy(dx: -thumbTouchSize.width, dy: -thumbTouchSize.height);
+        return bounds.contains(point);
     }
 }

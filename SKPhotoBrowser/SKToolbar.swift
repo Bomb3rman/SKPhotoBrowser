@@ -9,7 +9,7 @@
 import Foundation
 
 // helpers which often used
-private let bundle = NSBundle(forClass: SKPhotoBrowser.self)
+private let bundle = Bundle(for: SKPhotoBrowser.self)
 
 class SKToolbar: UIToolbar {
     var toolCaptionView: SKCaptionView!
@@ -21,7 +21,7 @@ class SKToolbar: UIToolbar {
     var toolPlayButton: UIBarButtonItem!
     var toolPauseButton: UIBarButtonItem!
     
-    private weak var browser: SKPhotoBrowser?
+    fileprivate weak var browser: SKPhotoBrowser?
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -46,7 +46,7 @@ class SKToolbar: UIToolbar {
         setupToolbar()
     }
     
-    func updateToolbar(currentPageIndex: Int) {
+    func updateToolbar(_ currentPageIndex: Int) {
         guard let browser = browser else { return }
         
         let photo = browser.photoAtIndex(currentPageIndex)
@@ -59,8 +59,8 @@ class SKToolbar: UIToolbar {
             toolCaptionView.detailText = captionDetail
         }
         
-        toolPreviousButton.enabled = (currentPageIndex > 0)
-        toolNextButton.enabled = (currentPageIndex < browser.numberOfPhotos - 1)
+        toolPreviousButton.isEnabled = (currentPageIndex > 0)
+        toolNextButton.isEnabled = (currentPageIndex < browser.numberOfPhotos - 1)
     
         setupToolbar()
     }
@@ -77,21 +77,21 @@ class SKToolbar: UIToolbar {
 
 private extension SKToolbar {
     func setupApperance() {
-        backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.6)
+        backgroundColor = UIColor.black.withAlphaComponent(0.6)
         clipsToBounds = true
-        translucent = true
-        setBackgroundImage(UIImage(), forToolbarPosition: .Any, barMetrics: .Default)
+        isTranslucent = true
+        setBackgroundImage(UIImage(), forToolbarPosition: .any, barMetrics: .default)
         
         // toolbar
         if !SKPhotoBrowserOptions.displayToolbar {
-            hidden = true
+            isHidden = true
         }
     }
     
     func setupToolbar() {
         guard let browser = browser else { return }
         
-        let flexSpace = UIBarButtonItem(barButtonSystemItem: .FlexibleSpace, target: self, action: nil)
+        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: self, action: nil)
         var items = [UIBarButtonItem]()
 
         if SKPhotoBrowserOptions.displayAction && SKPhotoBrowserOptions.displayDeleteButton {
@@ -143,43 +143,43 @@ private extension SKToolbar {
     
     func setupPreviousButton() {
         let previousBtn = SKPreviousButton(frame: frame)
-        previousBtn.addTarget(browser, action: #selector(SKPhotoBrowser.gotoPreviousPage), forControlEvents: .TouchUpInside)
+        previousBtn.addTarget(browser, action: #selector(SKPhotoBrowser.gotoPreviousPage), for: .touchUpInside)
         toolPreviousButton = UIBarButtonItem(customView: previousBtn)
     }
     
     func setupNextButton() {
         let nextBtn = SKNextButton(frame: frame)
-        nextBtn.addTarget(browser, action: #selector(SKPhotoBrowser.gotoNextPage), forControlEvents: .TouchUpInside)
+        nextBtn.addTarget(browser, action: #selector(SKPhotoBrowser.gotoNextPage), for: .touchUpInside)
         toolNextButton = UIBarButtonItem(customView: nextBtn)
     }
     
     func setupCaptionButton() {
-        toolCaptionView = SKCaptionView(frame: CGRectZero)
+        toolCaptionView = SKCaptionView(frame: CGRect.zero)
         toolCaptionButton = UIBarButtonItem(customView: toolCaptionView)
     }
     
     func setupActionButton() {
-        toolActionButton = UIBarButtonItem(barButtonSystemItem: .Action, target: browser, action: #selector(SKPhotoBrowser.actionButtonPressed))
+        toolActionButton = UIBarButtonItem(barButtonSystemItem: .action, target: browser, action: #selector(SKPhotoBrowser.actionButtonPressed))
         toolActionButton.tintColor = SKPhotoBrowserOptions.textAndIconColor
     }
     
     func setupDeleteButton() {
-        toolDeleteButton = UIBarButtonItem(barButtonSystemItem: .Trash, target: browser, action: #selector(SKPhotoBrowser.deleteButtonPressed))
-        toolDeleteButton.tintColor = .whiteColor()
+        toolDeleteButton = UIBarButtonItem(barButtonSystemItem: .trash, target: browser, action: #selector(SKPhotoBrowser.deleteButtonPressed))
+        toolDeleteButton.tintColor = .white
     }
     
     func setupPlayButton() {
-        toolPlayButton = UIBarButtonItem(barButtonSystemItem: .Play, target: browser, action: #selector(SKPhotoBrowser.playButtonPressed))
-        toolPlayButton.tintColor = .whiteColor()
+        toolPlayButton = UIBarButtonItem(barButtonSystemItem: .play, target: browser, action: #selector(SKPhotoBrowser.playButtonPressed))
+        toolPlayButton.tintColor = .white
     }
     
     func setupPauseButton() {
-        toolPauseButton = UIBarButtonItem(barButtonSystemItem: .Pause, target: browser, action: #selector(SKPhotoBrowser.pauseButtonPressed))
-        toolPauseButton.tintColor = .whiteColor()
+        toolPauseButton = UIBarButtonItem(barButtonSystemItem: .pause, target: browser, action: #selector(SKPhotoBrowser.pauseButtonPressed))
+        toolPauseButton.tintColor = .white
     }
     
     func sizeForCaptionViewAtOrientation() -> CGSize {
-        let currentOrientation = UIApplication.sharedApplication().statusBarOrientation
+        let currentOrientation = UIApplication.shared.statusBarOrientation
         var height: CGFloat = 38
         var width = bounds.size.width - (2 * 90)
         if UIInterfaceOrientationIsLandscape(currentOrientation) {
@@ -194,17 +194,17 @@ private extension SKToolbar {
 class SKToolbarButton: UIButton {
     let insets: UIEdgeInsets = UIEdgeInsets(top: 13.25, left: 17.25, bottom: 13.25, right: 17.25)
     
-    func setup(imageName: String) {
-        backgroundColor = .clearColor()
+    func setup(_ imageName: String) {
+        backgroundColor = .clear
         tintColor = SKPhotoBrowserOptions.textAndIconColor
         imageEdgeInsets = insets
         translatesAutoresizingMaskIntoConstraints = true
-        autoresizingMask = [.FlexibleBottomMargin, .FlexibleLeftMargin, .FlexibleRightMargin, .FlexibleTopMargin]
-        contentMode = .Center
+        autoresizingMask = [.flexibleBottomMargin, .flexibleLeftMargin, .flexibleRightMargin, .flexibleTopMargin]
+        contentMode = .center
         
         let image = UIImage(named: "SKPhotoBrowser.bundle/images/\(imageName)",
-                            inBundle: bundle, compatibleWithTraitCollection: nil)?.imageWithRenderingMode(.AlwaysTemplate) ?? UIImage()
-        setImage(image, forState: .Normal)
+                            in: bundle, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate) ?? UIImage()
+        setImage(image, for: UIControlState())
     }
 }
 

@@ -9,7 +9,7 @@
 import UIKit
 import AVFoundation
 
-public class SKZoomingScrollView: UIScrollView {
+open class SKZoomingScrollView: UIScrollView {
     var captionView: SKCaptionView!
     var photo: SKPhotoProtocol! {
         didSet {
@@ -21,12 +21,12 @@ public class SKZoomingScrollView: UIScrollView {
     }
     var displayPlaybackControls = false
     
-    private(set) var photoImageView: SKDetectingImageView!
-    private weak var photoBrowser: SKPhotoBrowser?
-    private var tapView: SKDetectingView!
-    private var indicatorView: SKIndicatorView!
-    private var videoPlayer: SKVideoPlayer!
-    private var playButton: UIButton!
+    fileprivate(set) var photoImageView: SKDetectingImageView!
+    fileprivate weak var photoBrowser: SKPhotoBrowser?
+    fileprivate var tapView: SKDetectingView!
+    fileprivate var indicatorView: SKIndicatorView!
+    fileprivate var videoPlayer: SKVideoPlayer!
+    fileprivate var playButton: UIButton!
     
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -54,15 +54,15 @@ public class SKZoomingScrollView: UIScrollView {
         // tap
         tapView = SKDetectingView(frame: bounds)
         tapView.delegate = self
-        tapView.backgroundColor = .clearColor()
-        tapView.autoresizingMask = [.FlexibleHeight, .FlexibleWidth]
+        tapView.backgroundColor = .clear
+        tapView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
         addSubview(tapView)
         
         // image
         photoImageView = SKDetectingImageView(frame: frame)
         photoImageView.delegate = self
-        photoImageView.contentMode = .Bottom
-        photoImageView.backgroundColor = .clearColor()
+        photoImageView.contentMode = .bottom
+        photoImageView.backgroundColor = .clear
         addSubview(photoImageView)
         
         // indicator
@@ -70,14 +70,14 @@ public class SKZoomingScrollView: UIScrollView {
         addSubview(indicatorView)
         
         // self
-        backgroundColor = .clearColor()
+        backgroundColor = .clear
         delegate = self
         showsHorizontalScrollIndicator = false
         showsVerticalScrollIndicator = false
         decelerationRate = UIScrollViewDecelerationRateFast
-        autoresizingMask = [.FlexibleWidth, .FlexibleTopMargin, .FlexibleBottomMargin, .FlexibleRightMargin, .FlexibleLeftMargin]
+        autoresizingMask = [.flexibleWidth, .flexibleTopMargin, .flexibleBottomMargin, .flexibleRightMargin, .flexibleLeftMargin]
     
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(scrubberStart), name: SKVideoScrubber.Start, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(scrubberStart), name: NSNotification.Name(rawValue: SKVideoScrubber.Start), object: nil)
     }
     
     func viewWillAppear() {
@@ -88,8 +88,8 @@ public class SKZoomingScrollView: UIScrollView {
         displayPlaybackControls = false
         
         if let playButton = playButton {
-            playButton.hidden = false
-            bringSubviewToFront(playButton)
+            playButton.isHidden = false
+            bringSubview(toFront: playButton)
         }
     }
     
@@ -101,7 +101,7 @@ public class SKZoomingScrollView: UIScrollView {
         if !displayingVideo() {
             return 0
         }
-        let asset = AVURLAsset(URL: photo.videoURL)
+        let asset = AVURLAsset(url: photo.videoURL as URL)
         return CMTimeGetSeconds(asset.duration)
     }
     
@@ -128,7 +128,7 @@ public class SKZoomingScrollView: UIScrollView {
             return
         }
         
-        playButton.hidden = true
+        playButton.isHidden = true
         displayPlaybackControls = true
         
         videoPlayer.play()
@@ -145,7 +145,7 @@ public class SKZoomingScrollView: UIScrollView {
     
     // MARK: - override
     
-    public override func layoutSubviews() {
+    open override func layoutSubviews() {
         tapView.frame = bounds
         indicatorView.frame = bounds
         
@@ -168,7 +168,7 @@ public class SKZoomingScrollView: UIScrollView {
         }
         
         // Center
-        if !CGRectEqualToRect(photoImageView.frame, frameToCenter) {
+        if !photoImageView.frame.equalTo(frameToCenter) {
             photoImageView.frame = frameToCenter
         }
         
@@ -183,7 +183,7 @@ public class SKZoomingScrollView: UIScrollView {
         }
     }
     
-    public func setMaxMinZoomScalesForCurrentBounds() {
+    open func setMaxMinZoomScalesForCurrentBounds() {
         maximumZoomScale = 1
         minimumZoomScale = 1
         zoomScale = 1
@@ -200,13 +200,13 @@ public class SKZoomingScrollView: UIScrollView {
         let minScale: CGFloat = min(xScale, yScale)
         var maxScale: CGFloat = 1.0
         
-        let scale = max(UIScreen.mainScreen().scale, 2.0)
-        let deviceScreenWidth = UIScreen.mainScreen().bounds.width * scale // width in pixels. scale needs to remove if to use the old algorithm
-        let deviceScreenHeight = UIScreen.mainScreen().bounds.height * scale // height in pixels. scale needs to remove if to use the old algorithm
+        let scale = max(UIScreen.main.scale, 2.0)
+        let deviceScreenWidth = UIScreen.main.bounds.width * scale // width in pixels. scale needs to remove if to use the old algorithm
+        let deviceScreenHeight = UIScreen.main.bounds.height * scale // height in pixels. scale needs to remove if to use the old algorithm
         
         if photoImageView.frame.width < deviceScreenWidth {
             // I think that we should to get coefficient between device screen width and image width and assign it to maxScale. I made two mode that we will get the same result for different device orientations.
-            if UIApplication.sharedApplication().statusBarOrientation.isPortrait {
+            if UIApplication.shared.statusBarOrientation.isPortrait {
                 maxScale = deviceScreenHeight / photoImageView.frame.width
             } else {
                 maxScale = deviceScreenWidth / photoImageView.frame.width
@@ -236,7 +236,7 @@ public class SKZoomingScrollView: UIScrollView {
         photoImageView.frame = CGRect(x: 0, y: 0, width: photoImageView.frame.size.width, height: photoImageView.frame.size.height)
         
         // Disable scrolling initially until the first pinch to fix issues with swiping on an initally zoomed in photo
-        self.scrollEnabled = false
+        self.isScrollEnabled = false
         
         // If it's a video then disable zooming
         if displayingVideo() {
@@ -247,7 +247,7 @@ public class SKZoomingScrollView: UIScrollView {
         setNeedsLayout()
     }
     
-    public func prepareForReuse() {
+    open func prepareForReuse() {
         photo = nil
         
         if videoPlayer != nil {
@@ -262,7 +262,7 @@ public class SKZoomingScrollView: UIScrollView {
     }
     
     // MARK: - image
-    public func displayImage(complete flag: Bool) {
+    open func displayImage(complete flag: Bool) {
         // reset scale
         maximumZoomScale = 1
         minimumZoomScale = 1
@@ -309,27 +309,27 @@ public class SKZoomingScrollView: UIScrollView {
             setMaxMinZoomScalesForCurrentBounds()
             
             if displayingVideo() && playButton == nil {
-                playButton = UIButton(type: .Custom)
-                playButton.setImage(UIImage(named: "SKPhotoBrowser.bundle/images/btn_common_play_blk", inBundle: NSBundle(forClass: SKPhotoBrowser.self), compatibleWithTraitCollection: nil), forState: .Normal)
-                playButton.setImage(UIImage(named: "SKPhotoBrowser.bundle/images/btn_common_play_tap_blk", inBundle: NSBundle(forClass: SKPhotoBrowser.self), compatibleWithTraitCollection: nil), forState: .Highlighted)
-                playButton.addTarget(self, action: #selector(playVideo), forControlEvents: .TouchUpInside)
+                playButton = UIButton(type: .custom)
+                playButton.setImage(UIImage(named: "SKPhotoBrowser.bundle/images/btn_common_play_blk", in: Bundle(for: SKPhotoBrowser.self), compatibleWith: nil), for: UIControlState())
+                playButton.setImage(UIImage(named: "SKPhotoBrowser.bundle/images/btn_common_play_tap_blk", in: Bundle(for: SKPhotoBrowser.self), compatibleWith: nil), for: .highlighted)
+                playButton.addTarget(self, action: #selector(playVideo), for: .touchUpInside)
                 playButton.sizeToFit()
-                playButton.userInteractionEnabled = true
+                playButton.isUserInteractionEnabled = true
                 addSubview(playButton)
             }
         }
         setNeedsLayout()
     }
     
-    public func displayImageFailure() {
+    open func displayImageFailure() {
         indicatorView.stopAnimating()
     }
     
     // MARK: - handle tap
     
-    public func handleDoubleTap(touchPoint: CGPoint) {
+    open func handleDoubleTap(_ touchPoint: CGPoint) {
         if let photoBrowser = photoBrowser {
-            NSObject.cancelPreviousPerformRequestsWithTarget(photoBrowser)
+            NSObject.cancelPreviousPerformRequests(withTarget: photoBrowser)
         }
         
         if zoomScale > minimumZoomScale {
@@ -344,7 +344,7 @@ public class SKZoomingScrollView: UIScrollView {
             }
             */
             let zoomRect = zoomRectForScrollViewWith(maximumZoomScale, touchPoint: touchPoint)
-            zoomToRect(zoomRect, animated: true)
+            zoom(to: zoomRect, animated: true)
         }
         
         // delay control
@@ -355,16 +355,16 @@ public class SKZoomingScrollView: UIScrollView {
 // MARK: - UIScrollViewDelegate
 
 extension SKZoomingScrollView: UIScrollViewDelegate {
-    public func viewForZoomingInScrollView(scrollView: UIScrollView) -> UIView? {
+    public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return photoImageView
     }
     
-    public func scrollViewWillBeginZooming(scrollView: UIScrollView, withView view: UIView?) {
-        self.scrollEnabled = true
+    public func scrollViewWillBeginZooming(_ scrollView: UIScrollView, with view: UIView?) {
+        self.isScrollEnabled = true
         photoBrowser?.cancelControlHiding()
     }
     
-    public func scrollViewDidZoom(scrollView: UIScrollView) {
+    public func scrollViewDidZoom(_ scrollView: UIScrollView) {
         setNeedsLayout()
         layoutIfNeeded()
     }
@@ -373,7 +373,7 @@ extension SKZoomingScrollView: UIScrollViewDelegate {
 // MARK: - SKDetectingImageViewDelegate
 
 extension SKZoomingScrollView: SKDetectingViewDelegate {
-    func handleSingleTap(view: UIView, touch: UITouch) {
+    func handleSingleTap(_ view: UIView, touch: UITouch) {
         guard let browser = photoBrowser else {
             return
         }
@@ -388,7 +388,7 @@ extension SKZoomingScrollView: SKDetectingViewDelegate {
         }
     }
     
-    func handleDoubleTap(view: UIView, touch: UITouch) {
+    func handleDoubleTap(_ view: UIView, touch: UITouch) {
         if SKPhotoBrowserOptions.enableZoomBlackArea == true {
             let needPoint = getViewFramePercent(view, touch: touch)
             handleDoubleTap(needPoint)
@@ -399,7 +399,7 @@ extension SKZoomingScrollView: SKDetectingViewDelegate {
 // MARK: - SKDetectingImageViewDelegate
 
 extension SKZoomingScrollView: SKDetectingImageViewDelegate {
-    func handleImageViewSingleTap(touchPoint: CGPoint) {
+    func handleImageViewSingleTap(_ touchPoint: CGPoint) {
         guard let browser = photoBrowser else {
             return
         }
@@ -410,7 +410,7 @@ extension SKZoomingScrollView: SKDetectingImageViewDelegate {
         }
     }
     
-    func handleImageViewDoubleTap(touchPoint: CGPoint) {
+    func handleImageViewDoubleTap(_ touchPoint: CGPoint) {
         if displayingVideo() {
             return
         }
@@ -419,28 +419,28 @@ extension SKZoomingScrollView: SKDetectingImageViewDelegate {
 }
 
 extension SKZoomingScrollView: SKVideoPlayerDelegate {
-    func playerCurrentTimeDidChange(progress: Float, currentTime: Float, videoPlayer: SKVideoPlayer) {
+    func playerCurrentTimeDidChange(_ progress: Float, currentTime: Float, videoPlayer: SKVideoPlayer) {
         photoBrowser?.navigationBar.updateScrubber(progress, currentTime: currentTime)
     }
     
-    func playerPlaybackDidEnd(videoPlayer: SKVideoPlayer) {
-        playButton.hidden = false
+    func playerPlaybackDidEnd(_ videoPlayer: SKVideoPlayer) {
+        playButton.isHidden = false
         photoBrowser?.toolbar.updateButtons()
     }
     
-    func playerStarted(videoPlayer: SKVideoPlayer) {
+    func playerStarted(_ videoPlayer: SKVideoPlayer) {
         photoBrowser?.toolbar.updateButtons()
     }
     
-    func playerPaused(videoPlayer: SKVideoPlayer) {
+    func playerPaused(_ videoPlayer: SKVideoPlayer) {
         photoBrowser?.toolbar.updateButtons()
     }
 }
 
 private extension SKZoomingScrollView {
-    func getViewFramePercent(view: UIView, touch: UITouch) -> CGPoint {
+    func getViewFramePercent(_ view: UIView, touch: UITouch) -> CGPoint {
         let oneWidthViewPercent = view.bounds.width / 100
-        let viewTouchPoint = touch.locationInView(view)
+        let viewTouchPoint = touch.location(in: view)
         let viewWidthTouch = viewTouchPoint.x
         let viewPercentTouch = viewWidthTouch / oneWidthViewPercent
         
@@ -459,11 +459,11 @@ private extension SKZoomingScrollView {
         return allPoint
     }
     
-    func zoomRectForScrollViewWith(scale: CGFloat, touchPoint: CGPoint) -> CGRect {
+    func zoomRectForScrollViewWith(_ scale: CGFloat, touchPoint: CGPoint) -> CGRect {
         let w = frame.size.width / scale
         let h = frame.size.height / scale
-        let x = touchPoint.x - (h / max(UIScreen.mainScreen().scale, 2.0))
-        let y = touchPoint.y - (w / max(UIScreen.mainScreen().scale, 2.0))
+        let x = touchPoint.x - (h / max(UIScreen.main.scale, 2.0))
+        let y = touchPoint.y - (w / max(UIScreen.main.scale, 2.0))
         
         return CGRect(x: x, y: y, width: w, height: h)
     }

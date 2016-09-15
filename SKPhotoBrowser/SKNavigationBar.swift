@@ -10,9 +10,9 @@ import UIKit
 
 class SKNavigationBar: UINavigationBar {
 
-    private weak var browser: SKPhotoBrowser?
-    private var navigationItem: UINavigationItem!
-    private var videoScrubber: SKVideoScrubber!
+    fileprivate weak var browser: SKPhotoBrowser?
+    fileprivate var navigationItem: UINavigationItem!
+    fileprivate var videoScrubber: SKVideoScrubber!
     
     var closeButton: UIBarButtonItem!
     
@@ -36,7 +36,7 @@ class SKNavigationBar: UINavigationBar {
         videoScrubber = SKVideoScrubber(frame: frameForVideoScrubber())
     }
     
-    func updateTitle(currentPageIndex: Int) {
+    func updateTitle(_ currentPageIndex: Int) {
         guard let browser = browser else { return }
         
         func showCounterTitle() {
@@ -65,7 +65,7 @@ class SKNavigationBar: UINavigationBar {
         }
     }
     
-    func updateScrubber(progress: Float, currentTime: Float) {
+    func updateScrubber(_ progress: Float, currentTime: Float) {
         videoScrubber.progress = progress
         videoScrubber.currentTime = currentTime
     }
@@ -79,17 +79,17 @@ class SKNavigationBar: UINavigationBar {
 private extension SKNavigationBar {
     
     func setupAppearence() {
-        backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.6)
+        backgroundColor = UIColor.black.withAlphaComponent(0.6)
         clipsToBounds = true
-        translucent = true
-        setBackgroundImage(UIImage(), forBarPosition: .Any, barMetrics: .Default)
-        titleTextAttributes = [ NSForegroundColorAttributeName : UIColor.whiteColor() ]
+        isTranslucent = true
+        setBackgroundImage(UIImage(), for: .any, barMetrics: .default)
+        titleTextAttributes = [ NSForegroundColorAttributeName : UIColor.white ]
     }
     
     func setupCloseButton() {
         if SKPhotoBrowserOptions.displayCloseButton {
-            let closeButton = UIBarButtonItem(barButtonSystemItem: .Stop, target: browser, action: #selector(SKPhotoBrowser.closeButtonPressed))
-            closeButton.tintColor = .whiteColor()
+            let closeButton = UIBarButtonItem(barButtonSystemItem: .stop, target: browser, action: #selector(SKPhotoBrowser.closeButtonPressed))
+            closeButton.tintColor = .white
             navigationItem.leftBarButtonItem = closeButton
         }
     }

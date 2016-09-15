@@ -15,22 +15,22 @@ import Photos
     var captionDetail: String! { get }
     var index: Int { get set}
     var contentMode: UIViewContentMode { get set }
-    var videoURL: NSURL! { get }
+    var videoURL: URL! { get }
     func loadUnderlyingImageAndNotify()
     func checkCache()
 }
 
 // MARK: - SKPhoto
-public class SKPhoto: NSObject, SKPhotoProtocol {
+open class SKPhoto: NSObject, SKPhotoProtocol {
     
-    public var underlyingImage: UIImage!
-    public var photoURL: String!
-    public var contentMode: UIViewContentMode = .ScaleAspectFill
-    public var shouldCachePhotoURLImage: Bool = false
-    public var captionTitle: String!
-    public var captionDetail: String!
-    public var index: Int = 0
-    public var videoURL: NSURL!
+    open var underlyingImage: UIImage!
+    open var photoURL: String!
+    open var contentMode: UIViewContentMode = .scaleAspectFill
+    open var shouldCachePhotoURLImage: Bool = false
+    open var captionTitle: String!
+    open var captionDetail: String!
+    open var index: Int = 0
+    open var videoURL: URL!
     
     override init() {
         super.init()
@@ -52,13 +52,13 @@ public class SKPhoto: NSObject, SKPhotoProtocol {
         underlyingImage = holder
     }
     
-    convenience init(videoURL: NSURL) {
+    convenience init(videoURL: URL) {
         self.init()
         self.videoURL = videoURL
         underlyingImage = SKPhoto.videoThumb(videoURL)
     }
     
-    public func checkCache() {
+    open func checkCache() {
         guard let photoURL = photoURL else {
             return
         }
@@ -67,7 +67,7 @@ public class SKPhoto: NSObject, SKPhotoProtocol {
         }
         
         if SKCache.sharedCache.imageCache is SKRequestResponseCacheable {
-            let request = NSURLRequest(URL: NSURL(string: photoURL)!)
+            let request = URLRequest(url: URL(string: photoURL)!)
             if let img = SKCache.sharedCache.imageForRequest(request) {
                 underlyingImage = img
             }
@@ -78,7 +78,7 @@ public class SKPhoto: NSObject, SKPhotoProtocol {
         }
     }
     
-    public func loadUnderlyingImageAndNotify() {
+    open func loadUnderlyingImageAndNotify() {
         
         if underlyingImage != nil {
             loadUnderlyingImageComplete()
@@ -87,19 +87,19 @@ public class SKPhoto: NSObject, SKPhotoProtocol {
         
         if photoURL != nil {
             // Fetch Image
-            let session = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
-            if let nsURL = NSURL(string: photoURL) {
-                var task: NSURLSessionDataTask!
-                task = session.dataTaskWithURL(nsURL, completionHandler: { [weak self](response: NSData?, data: NSURLResponse?, error: NSError?) in
+            let session = URLSession(configuration: URLSessionConfiguration.default)
+            if let nsURL = URL(string: photoURL) {
+                var task: URLSessionDataTask!
+                task = session.dataTask(with: nsURL, completionHandler: { [weak self](response: Data?, data: URLResponse?, error: NSError?) in
                     if let _self = self {
                         
                         if error != nil {
-                            dispatch_async(dispatch_get_main_queue()) {
+                            DispatchQueue.main.async {
                                 _self.loadUnderlyingImageComplete()
                             }
                         }
                         
-                        if let res = response, image = UIImage(data: res) {
+                        if let res = response, let image = UIImage(data: res) {
                             if _self.shouldCachePhotoURLImage {
                                 if SKCache.sharedCache.imageCache is SKRequestResponseCacheable {
                                     SKCache.sharedCache.setImageData(response!, response: data!, request: task.originalRequest!)
@@ -107,21 +107,21 @@ public class SKPhoto: NSObject, SKPhotoProtocol {
                                     SKCache.sharedCache.setImage(image, forKey: _self.photoURL)
                                 }
                             }
-                            dispatch_async(dispatch_get_main_queue()) {
+                            DispatchQueue.main.async {
                                 _self.underlyingImage = image
                                 _self.loadUnderlyingImageComplete()
                             }
                         }
                         session.finishTasksAndInvalidate()
                     }
-                })
+                } as! (Data?, URLResponse?, Error?) -> Void)
                 task.resume()
             }
         }
     }
 
-    public func loadUnderlyingImageComplete() {
-        NSNotificationCenter.defaultCenter().postNotificationName(SKPHOTO_LOADING_DID_END_NOTIFICATION, object: self)
+    open func loadUnderlyingImageComplete() {
+        NotificationCenter.default.post(name: Notification.Name(rawValue: SKPHOTO_LOADING_DID_END_NOTIFICATION), object: self)
     }
     
 }
@@ -129,24 +129,24 @@ public class SKPhoto: NSObject, SKPhotoProtocol {
 // MARK: - Static Function
 
 extension SKPhoto {
-    public static func photoWithImage(image: UIImage) -> SKPhoto {
+    public static func photoWithImage(_ image: UIImage) -> SKPhoto {
         return SKPhoto(image: image)
     }
     
-    public static func photoWithImageURL(url: String) -> SKPhoto {
+    public static func photoWithImageURL(_ url: String) -> SKPhoto {
         return SKPhoto(url: url)
     }
     
-    public static func photoWithImageURL(url: String, holder: UIImage?) -> SKPhoto {
+    public static func photoWithImageURL(_ url: String, holder: UIImage?) -> SKPhoto {
         return SKPhoto(url: url, holder: holder)
     }
     
-    public static func photoWithVideoURL(videoURL: NSURL) -> SKPhoto {
+    public static func photoWithVideoURL(_ videoURL: URL) -> SKPhoto {
         return SKPhoto(videoURL: videoURL)
     }
     
-    public static func videoThumb(URL: NSURL) -> UIImage? {
-        let avasset = AVURLAsset(URL: URL)
+    public static func videoThumb(_ URL: Foundation.URL) -> UIImage? {
+        let avasset = AVURLAsset(url: URL)
         let generator = AVAssetImageGenerator(asset: avasset)
         generator.appliesPreferredTrackTransform = true
         
@@ -154,8 +154,8 @@ extension SKPhoto {
         time.value = min(time.value, 2)
         
         do {
-            let imageRef = try generator.copyCGImageAtTime(time, actualTime: nil)
-            return UIImage(CGImage: imageRef)
+            let imageRef = try generator.copyCGImage(at: time, actualTime: nil)
+            return UIImage(cgImage: imageRef)
         } catch {
             return nil
         }
