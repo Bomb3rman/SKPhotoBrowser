@@ -66,9 +66,8 @@ class SKToolbar: UIToolbar {
     }
     
     override func layoutSubviews() {
-        super.layoutSubviews()
-    
         toolCaptionButton.customView?.frame.size = sizeForCaptionViewAtOrientation()
+        super.layoutSubviews()
     }
     
     func updateButtons() {
