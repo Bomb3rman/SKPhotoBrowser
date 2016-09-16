@@ -138,14 +138,15 @@ private extension FromLocalViewController {
     func createLocalPhotos() -> [SKPhotoProtocol] {
         return (0..<12).map { (i: Int) -> SKPhotoProtocol in
             if i < 10 {
-                let photo = SKPhoto.photoWithImage(UIImage(named: "image\(i%10).jpg")!)
+                let url = Bundle.main.path(forResource: "image\(i%10)", ofType:"jpg")
+                let photo = SKLocalPhoto.photoWithImageURL(url!)
                 photo.captionTitle = captionTitle[i%10]
                 photo.captionDetail = captionDetail[i%10]
 //              photo.contentMode = .ScaleAspectFill
                 return photo
             } else {
                 let path = Bundle.main.path(forResource: "video\(i%10)", ofType:"mov")
-                let photo = SKPhoto.photoWithVideoURL(URL(fileURLWithPath: path!, isDirectory: false))
+                let photo = SKLocalPhoto.photoWithVideoURL(URL(fileURLWithPath: path!, isDirectory: false))
                 photo.captionTitle = captionTitle[i%10]
                 photo.captionDetail = captionDetail[i%10]
                 return photo

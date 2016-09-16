@@ -35,6 +35,12 @@ open class SKLocalPhoto: NSObject, SKPhotoProtocol {
         underlyingImage = holder
     }
     
+    convenience init(videoURL: URL) {
+        self.init()
+        self.videoURL = videoURL
+        underlyingImage = SKPhoto.videoThumb(videoURL)
+    }
+    
     open func checkCache() {}
     
     open func loadUnderlyingImageAndNotify() {
@@ -68,5 +74,9 @@ open class SKLocalPhoto: NSObject, SKPhotoProtocol {
     
     open class func photoWithImageURL(_ url: String, holder: UIImage?) -> SKLocalPhoto {
         return SKLocalPhoto(url: url, holder: holder)
+    }
+    
+    open class func photoWithVideoURL(_ videoURL: URL) -> SKLocalPhoto {
+        return SKLocalPhoto(videoURL: videoURL)
     }
 }
