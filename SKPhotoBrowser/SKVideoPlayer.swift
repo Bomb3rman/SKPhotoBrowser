@@ -25,6 +25,7 @@ class SKVideoPlayer {
             self.playerLayer.frame = frame
         }
     }
+    var isActive = true
     
     fileprivate var asset: AVURLAsset!
     fileprivate var duration: Float64!
@@ -80,6 +81,7 @@ class SKVideoPlayer {
     }
     
     func reset() {
+        isActive = true
         self.player.pause()
         player.seek(to: kCMTimeZero, completionHandler: { (finished: Bool) in })
     }
@@ -113,18 +115,24 @@ class SKVideoPlayer {
 private extension SKVideoPlayer {
     
     @objc func scrubberStart() {
-        self.pause()
+        if isActive {
+            self.pause()
+        }
     }
     
     @objc func scrubberEnd() {
-        Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(play), userInfo: nil, repeats: false)
+        if isActive {
+            Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(play), userInfo: nil, repeats: false)
+        }
     }
     
     @objc func scrubberValueChanged(_ notification: Notification) {
-        if let userInfo = (notification as NSNotification).userInfo, let value = userInfo[SKVideoScrubber.ValueKey] as? Float {
-            let seconds = duration * Float64(value)
-            let seekToTime = CMTimeMake(Int64(seconds), 1)
-            stopPlayingAndSeekSmoothlyToTime(seekToTime)
+        if isActive {
+            if let userInfo = (notification as NSNotification).userInfo, let value = userInfo[SKVideoScrubber.ValueKey] as? Float {
+                let seconds = duration * Float64(value)
+                let seekToTime = CMTimeMake(Int64(seconds), 1)
+                stopPlayingAndSeekSmoothlyToTime(seekToTime)
+            }
         }
     }
 }

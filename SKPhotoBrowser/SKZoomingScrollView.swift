@@ -93,6 +93,13 @@ open class SKZoomingScrollView: UIScrollView {
         }
     }
     
+    func viewWillDisapper() {
+        guard let videoPlayer = videoPlayer else {
+            return
+        }
+        videoPlayer.isActive = false
+    }
+    
     func displayingVideo() -> Bool {
         return photo.videoURL != nil
     }
@@ -131,7 +138,9 @@ open class SKZoomingScrollView: UIScrollView {
         playButton.isHidden = true
         displayPlaybackControls = true
         
-        videoPlayer.play()
+        if !videoPlayer.isPlaying() {
+            videoPlayer.play()
+        }
         photoBrowser?.toolbar.updateButtons()
     }
     
@@ -429,7 +438,7 @@ extension SKZoomingScrollView: SKVideoPlayerDelegate {
     }
     
     func playerStarted(_ videoPlayer: SKVideoPlayer) {
-        photoBrowser?.toolbar.updateButtons()
+        playVideo()
     }
     
     func playerPaused(_ videoPlayer: SKVideoPlayer) {

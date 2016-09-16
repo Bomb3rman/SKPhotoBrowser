@@ -622,6 +622,11 @@ extension SKPhotoBrowser: UIScrollViewDelegate {
             if let page = pageDisplayedAtIndex(currentPageIndex) {
                 page.viewWillAppear()
             }
+            
+            if let page = pageDisplayedAtIndex(previousCurrentPage) {
+                page.viewWillDisapper()
+            }
+            
             delegate?.didShowPhotoAtIndex?(currentPageIndex)
             updateNavigationBarAndToolBar()
         }
