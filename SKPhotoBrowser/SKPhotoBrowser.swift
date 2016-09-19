@@ -55,6 +55,10 @@ open class SKPhotoBrowser: UIViewController {
     // statusbar initial state
     fileprivate var statusbarHidden: Bool = UIApplication.shared.isStatusBarHidden
     
+    override open var preferredStatusBarStyle : UIStatusBarStyle {
+        return .lightContent
+    }
+    
     // MARK - Initializer
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
