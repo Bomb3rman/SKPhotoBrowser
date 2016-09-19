@@ -466,9 +466,25 @@ internal extension SKPhotoBrowser {
     }
     
     func deleteButtonPressed(_ sender: UIButton) {
-        delegate?.removePhoto?(self, index: currentPageIndex) { [weak self] in
-            self?.deleteImage()
-        }
+        weak var wself: SKPhotoBrowser? = self
+        
+        let actionSheetController: UIAlertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        
+        let cancelAction: UIAlertAction = UIAlertAction(title: "Cancel", style: .cancel, handler: {(alert: UIAlertAction!) in
+        })
+        actionSheetController.addAction(cancelAction)
+        
+        let deleteAction: UIAlertAction = UIAlertAction(title: "Delete Photo", style: .destructive, handler: {(alert: UIAlertAction!) in
+            if let sself = wself {
+                sself.delegate?.removePhoto?(self, index: sself.currentPageIndex) { [weak self] in
+                    self?.deleteImage()
+                }
+            }
+        })
+        actionSheetController.addAction(deleteAction)
+        
+        //Present the AlertController
+        self.present(actionSheetController, animated: true, completion: nil)
     }
     
     func closeButtonPressed(_ sender: UIButton) {
