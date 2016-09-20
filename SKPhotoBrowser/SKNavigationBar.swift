@@ -97,7 +97,7 @@ private extension SKNavigationBar {
     }
     
     func frameForVideoScrubber() -> CGRect {
-        return CGRect(x: 55, y: bounds.height/2, width: bounds.size.width - 80, height: 20)
+        return CGRect(x: 70, y: bounds.height/2, width: bounds.size.width - 80, height: 20)
     }
 }
 
