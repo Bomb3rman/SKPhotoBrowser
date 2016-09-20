@@ -88,13 +88,51 @@ private extension SKNavigationBar {
     
     func setupCloseButton() {
         if SKPhotoBrowserOptions.displayCloseButton {
-            let closeButton = UIBarButtonItem(barButtonSystemItem: .stop, target: browser, action: #selector(SKPhotoBrowser.closeButtonPressed))
-            closeButton.tintColor = .white
-            navigationItem.leftBarButtonItem = closeButton
+            guard let browser = self.browser else {
+                return
+            }
+            
+            navigationItem.leftBarButtonItem = SKBackButton(target: browser, action: #selector(SKPhotoBrowser.closeButtonPressed))
         }
     }
     
     func frameForVideoScrubber() -> CGRect {
         return CGRect(x: 55, y: bounds.height/2, width: bounds.size.width - 80, height: 20)
+    }
+}
+
+class SKBackButton: UIBarButtonItem {
+    
+    init(target: Any?, action: Selector?) {
+        super.init()
+        
+        let backImageView = UIImageView(frame: CGRect(x: -15, y: 0, width: 15, height: 15))
+        backImageView.clipsToBounds = true
+        backImageView.layer.masksToBounds = true
+        backImageView.contentMode = .scaleAspectFit
+        backImageView.tintColor = .white
+        backImageView.image = UIImage(named: "SKPhotoBrowser.bundle/images/btn_common_back_wh",
+                                      in: Bundle(for: SKPhotoBrowser.self), compatibleWith: nil)?.withRenderingMode(.alwaysTemplate) ?? UIImage()
+        
+        let backLabel = UILabel()
+        backLabel.text = "Back"
+        backLabel.textColor = .white
+        backLabel.font = UIFont.systemFont(ofSize: 15)
+        backLabel.sizeToFit()
+        backLabel.frame.origin.x = backImageView.frame.origin.x + backImageView.frame.width + 3
+        backLabel.center.y = backImageView.center.y
+        
+        let backButton = UIView(frame: backLabel.frame)
+        backButton.addSubview(backImageView)
+        backButton.addSubview(backLabel)
+        
+        let tapGesture = UITapGestureRecognizer(target: target, action: action)
+        backButton.addGestureRecognizer(tapGesture)
+        
+        customView = backButton
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }
