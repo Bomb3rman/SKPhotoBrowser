@@ -210,11 +210,11 @@ open class SKPhotoBrowser: UIViewController {
     open func dismissPhotoBrowser(animated: Bool, completion: ((Void) -> Void)? = nil) {
         prepareForClosePhotoBrowser()
 
-        if !animated {
+        if animated {
             modalTransitionStyle = .crossDissolve
         }
         
-        dismiss(animated: !animated) {
+        dismiss(animated: animated) {
             completion?()
             if let page = self.pageDisplayedAtIndex(self.currentPageIndex) {
                 if page.isPlayingVideo() {
