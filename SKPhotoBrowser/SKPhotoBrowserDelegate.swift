@@ -71,5 +71,23 @@ import Foundation
      - Returns: the view to animate to
      */
     @objc optional func viewForPhoto(_ browser: SKPhotoBrowser, index: Int) -> UIView?
+    
+    /**
+     Tells the delegate the user wants to download a photo
+     
+     - Parameter browser: reference to the calling SKPhotoBrowser
+     - Parameter index: the index of the photo to download
+     
+     */
+    @objc optional func downloadPhoto(_ browser: SKPhotoBrowser, index: Int)
+    
+    /**
+     Tells the delegate the user wants to cancel the downloading of a photo
+     
+     - Parameter browser: reference to the calling SKPhotoBrowser
+     - Parameter index: the index of the photo to cancel download
+     
+     */
+    @objc optional func cancelDownloadPhoto(_ browser: SKPhotoBrowser, index: Int)
 }
 

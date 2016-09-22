@@ -9,6 +9,11 @@
 import UIKit
 import Photos
 
+@objc public protocol SKPhotoDownloadDelegate {
+    func progress(value: CGFloat)
+    func downloadFinished()
+}
+
 @objc public protocol SKPhotoProtocol: NSObjectProtocol {
     var underlyingImage: UIImage! { get }
     var captionTitle: String! { get }
@@ -16,6 +21,10 @@ import Photos
     var index: Int { get set}
     var contentMode: UIViewContentMode { get set }
     var videoURL: URL! { get }
+    var enableDownload: Bool { get set }
+    var isDownloading: Bool {get set}
+    var downloadProgress: CGFloat { get set }
+    weak var delegate: SKPhotoDownloadDelegate! { get set }
     func loadUnderlyingImageAndNotify()
     func checkCache()
 }
@@ -31,6 +40,23 @@ open class SKPhoto: NSObject, SKPhotoProtocol {
     open var captionDetail: String!
     open var index: Int = 0
     open var videoURL: URL!
+    open var enableDownload: Bool = false
+    open var isDownloading: Bool = false
+    weak open var delegate: SKPhotoDownloadDelegate!
+    
+    open var downloadProgress: CGFloat = 0.0 {
+        didSet {
+            guard let delegate = delegate else {
+                return
+            }
+            delegate.progress(value: downloadProgress)
+            
+            if downloadProgress >= 1.0 {
+                enableDownload = false
+                delegate.downloadFinished()
+            }
+        }
+    }
     
     override init() {
         super.init()
@@ -119,7 +145,7 @@ open class SKPhoto: NSObject, SKPhotoProtocol {
             }
         }
     }
-
+    
     open func loadUnderlyingImageComplete() {
         NotificationCenter.default.post(name: Notification.Name(rawValue: SKPHOTO_LOADING_DID_END_NOTIFICATION), object: self)
     }
@@ -160,5 +186,5 @@ extension SKPhoto {
             return nil
         }
     }
-
+    
 }

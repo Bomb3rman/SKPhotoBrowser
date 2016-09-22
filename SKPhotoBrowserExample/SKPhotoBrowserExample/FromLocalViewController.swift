@@ -13,6 +13,7 @@ class FromLocalViewController: UIViewController, UICollectionViewDataSource, UIC
     @IBOutlet weak var collectionView: UICollectionView!
     
     var images = [SKPhotoProtocol]()
+    var downloadTimer: Timer!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,6 +32,16 @@ class FromLocalViewController: UIViewController, UICollectionViewDataSource, UIC
     
     override var preferredStatusBarStyle : UIStatusBarStyle {
         return .lightContent
+    }
+    
+    func updateDownloadProgress(timer: Timer) {
+        if let index = timer.userInfo as? Int, let photo = images[index] as? SKLocalPhoto {
+            photo.downloadProgress = photo.downloadProgress + 0.1
+            
+            if photo.downloadProgress >= 1.0 {
+                downloadTimer.invalidate()
+            }
+        }
     }
 }
 
@@ -121,6 +132,19 @@ extension FromLocalViewController {
     func viewForPhoto(_ browser: SKPhotoBrowser, index: Int) -> UIView? {
         return collectionView.cellForItem(at: IndexPath(item: index, section: 0))
     }
+    
+    func downloadPhoto(_ browser: SKPhotoBrowser, index: Int) {
+        images[index].isDownloading = true
+        downloadTimer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(updateDownloadProgress), userInfo: index, repeats: true)
+    }
+    
+    func cancelDownloadPhoto(_ browser: SKPhotoBrowser, index: Int) {
+        images[index].isDownloading = false
+        if downloadTimer != nil {
+            downloadTimer.invalidate()
+            downloadTimer = nil
+        }
+    }
 }
 
 // MARK: - private
@@ -137,20 +161,18 @@ private extension FromLocalViewController {
     
     func createLocalPhotos() -> [SKPhotoProtocol] {
         return (0..<12).map { (i: Int) -> SKPhotoProtocol in
+            var photo: SKLocalPhoto!
             if i < 10 {
                 let url = Bundle.main.path(forResource: "image\(i%10)", ofType:"jpg")
-                let photo = SKLocalPhoto.photoWithImageURL(url!)
-                photo.captionTitle = captionTitle[i%10]
-                photo.captionDetail = captionDetail[i%10]
-//              photo.contentMode = .ScaleAspectFill
-                return photo
+                photo = SKLocalPhoto.photoWithImageURL(url!)
+                photo.enableDownload = (i == 1)
             } else {
                 let path = Bundle.main.path(forResource: "video\(i%10)", ofType:"mov")
-                let photo = SKLocalPhoto.photoWithVideoURL(URL(fileURLWithPath: path!, isDirectory: false))
-                photo.captionTitle = captionTitle[i%10]
-                photo.captionDetail = captionDetail[i%10]
-                return photo
+                photo = SKLocalPhoto.photoWithVideoURL(URL(fileURLWithPath: path!, isDirectory: false), holderURL: nil)
             }
+            photo.captionTitle = captionTitle[i%10]
+            photo.captionDetail = captionDetail[i%10]
+            return photo
         }
     }
 }

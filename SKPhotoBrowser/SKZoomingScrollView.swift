@@ -16,6 +16,7 @@ open class SKZoomingScrollView: UIScrollView {
             photoImageView.image = nil
             if photo != nil {
                 displayImage(complete: false)
+                photo.delegate = self
             }
         }
     }
@@ -27,7 +28,8 @@ open class SKZoomingScrollView: UIScrollView {
     fileprivate var indicatorView: SKIndicatorView!
     fileprivate var videoPlayer: SKVideoPlayer!
     fileprivate var playButton: UIButton!
-    
+    fileprivate var downloadButton: SKDownloadButton!
+
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         setup()
@@ -48,6 +50,7 @@ open class SKZoomingScrollView: UIScrollView {
         photoBrowser = nil
         videoPlayer = nil
         playButton = nil
+        downloadButton = nil
     }
     
     func setup() {
@@ -76,7 +79,7 @@ open class SKZoomingScrollView: UIScrollView {
         showsVerticalScrollIndicator = false
         decelerationRate = UIScrollViewDecelerationRateFast
         autoresizingMask = [.flexibleWidth, .flexibleTopMargin, .flexibleBottomMargin, .flexibleRightMargin, .flexibleLeftMargin]
-    
+        
         NotificationCenter.default.addObserver(self, selector: #selector(scrubberStart), name: NSNotification.Name(rawValue: SKVideoScrubber.Start), object: nil)
     }
     
@@ -90,6 +93,11 @@ open class SKZoomingScrollView: UIScrollView {
         if let playButton = playButton {
             playButton.isHidden = false
             bringSubview(toFront: playButton)
+        }
+        
+        if let downloadButton = downloadButton {
+            downloadButton.isHidden = false
+            bringSubview(toFront: downloadButton)
         }
     }
     
@@ -190,6 +198,10 @@ open class SKZoomingScrollView: UIScrollView {
         if let playButton = self.playButton {
             playButton.center = CGPoint(x: frame.width/2, y: frame.height/2)
         }
+        
+        if let downloadButton = self.downloadButton {
+            downloadButton.center = CGPoint(x: frame.width/2, y: frame.height/2)
+        }
     }
     
     open func setMaxMinZoomScalesForCurrentBounds() {
@@ -226,7 +238,7 @@ open class SKZoomingScrollView: UIScrollView {
             // here if photoImageView.frame.width == deviceScreenWidth
             maxScale = 2.5
         }
-    
+        
         maximumZoomScale = maxScale
         minimumZoomScale = minScale
         zoomScale = minScale
@@ -235,11 +247,11 @@ open class SKZoomingScrollView: UIScrollView {
         // maximum zoom scale to 0.5
         // After changing this value, we still never use more
         /*
-        maxScale = maxScale / scale 
-        if maxScale < minScale {
-            maxScale = minScale * 2
-        }
-        */
+         maxScale = maxScale / scale
+         if maxScale < minScale {
+         maxScale = minScale * 2
+         }
+         */
         
         // reset position
         photoImageView.frame = CGRect(x: 0, y: 0, width: photoImageView.frame.size.width, height: photoImageView.frame.size.height)
@@ -257,6 +269,7 @@ open class SKZoomingScrollView: UIScrollView {
     }
     
     open func prepareForReuse() {
+        photo.delegate = nil
         photo = nil
         
         if videoPlayer != nil {
@@ -267,6 +280,11 @@ open class SKZoomingScrollView: UIScrollView {
         if playButton != nil {
             playButton.removeFromSuperview()
             playButton = nil
+        }
+        
+        if downloadButton != nil {
+            downloadButton.removeFromSuperview()
+            downloadButton = nil
         }
     }
     
@@ -289,17 +307,17 @@ open class SKZoomingScrollView: UIScrollView {
         
         if let image = photo.underlyingImage {
             /*
-            // create padding
-            let width: CGFloat = image.size.width + SKPhotoBrowserOptions.imagePaddingX
-            let height: CGFloat = image.size.height + SKPhotoBrowserOptions.imagePaddingY;
-            UIGraphicsBeginImageContextWithOptions(CGSizeMake(width, height), false, 0.0);
-            let context: CGContextRef = UIGraphicsGetCurrentContext()!;
-            UIGraphicsPushContext(context);
-            let origin: CGPoint = CGPointMake((width - image.size.width) / 2, (height - image.size.height) / 2);
-            image.drawAtPoint(origin)
-            UIGraphicsPopContext();
-            let imageWithPadding = UIGraphicsGetImageFromCurrentImageContext();
-            UIGraphicsEndImageContext();
+             // create padding
+             let width: CGFloat = image.size.width + SKPhotoBrowserOptions.imagePaddingX
+             let height: CGFloat = image.size.height + SKPhotoBrowserOptions.imagePaddingY;
+             UIGraphicsBeginImageContextWithOptions(CGSizeMake(width, height), false, 0.0);
+             let context: CGContextRef = UIGraphicsGetCurrentContext()!;
+             UIGraphicsPushContext(context);
+             let origin: CGPoint = CGPointMake((width - image.size.width) / 2, (height - image.size.height) / 2);
+             image.drawAtPoint(origin)
+             UIGraphicsPopContext();
+             let imageWithPadding = UIGraphicsGetImageFromCurrentImageContext();
+             UIGraphicsEndImageContext();
              */
             
             // image
@@ -317,7 +335,14 @@ open class SKZoomingScrollView: UIScrollView {
             
             setMaxMinZoomScalesForCurrentBounds()
             
-            if displayingVideo() && playButton == nil {
+            if photo.enableDownload && downloadButton == nil {
+                downloadButton = SKDownloadButton(frame: CGRect(x: 0, y: 0, width: 68, height: 68))
+                downloadButton.delegate = self
+                if photo.isDownloading {
+                    downloadButton.setProgress(photo.downloadProgress, animated: false)
+                }
+                addSubview(downloadButton)
+            } else if !photo.enableDownload && displayingVideo() && playButton == nil {
                 playButton = UIButton(type: .custom)
                 playButton.setImage(UIImage(named: "SKPhotoBrowser.bundle/images/btn_common_play_blk", in: Bundle(for: SKPhotoBrowser.self), compatibleWith: nil), for: UIControlState())
                 playButton.setImage(UIImage(named: "SKPhotoBrowser.bundle/images/btn_common_play_tap_blk", in: Bundle(for: SKPhotoBrowser.self), compatibleWith: nil), for: .highlighted)
@@ -325,6 +350,11 @@ open class SKZoomingScrollView: UIScrollView {
                 playButton.sizeToFit()
                 playButton.isUserInteractionEnabled = true
                 addSubview(playButton)
+            }
+            
+            if !photo.enableDownload && downloadButton != nil {
+                downloadButton.removeFromSuperview()
+                downloadButton = nil
             }
         }
         setNeedsLayout()
@@ -347,11 +377,11 @@ open class SKZoomingScrollView: UIScrollView {
         } else {
             // zoom in
             // I think that the result should be the same after double touch or pinch
-           /* var newZoom: CGFloat = zoomScale * 3.13
-            if newZoom >= maximumZoomScale {
-                newZoom = maximumZoomScale
-            }
-            */
+            /* var newZoom: CGFloat = zoomScale * 3.13
+             if newZoom >= maximumZoomScale {
+             newZoom = maximumZoomScale
+             }
+             */
             let zoomRect = zoomRectForScrollViewWith(maximumZoomScale, touchPoint: touchPoint)
             zoom(to: zoomRect, animated: true)
         }
@@ -494,5 +524,32 @@ private extension SKZoomingScrollView {
         if videoPlayer == nil {
             initVideoPlayer()
         }
+    }
+}
+
+extension SKZoomingScrollView: SKPhotoDownloadDelegate {
+    
+    public func progress(value: CGFloat) {
+        guard let downloadButton = self.downloadButton else {
+            return
+        }
+        
+        if photo.isDownloading {
+            downloadButton.setProgress(value)
+        }
+    }
+    
+    public func downloadFinished() {
+        displayImage(complete: true)
+    }
+}
+
+extension SKZoomingScrollView: SKDownloadButtonDelegate {
+    public func cancelPressed() {
+        photoBrowser?.delegate?.cancelDownloadPhoto?(photoBrowser!, index: photo.index)
+    }
+    
+    public func downloadPressed() {
+        photoBrowser?.delegate?.downloadPhoto?(photoBrowser!, index: photo.index)
     }
 }

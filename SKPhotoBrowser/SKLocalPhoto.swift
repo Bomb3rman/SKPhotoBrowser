@@ -10,15 +10,46 @@ import UIKit
 
 // MARK: - SKLocalPhoto
 open class SKLocalPhoto: NSObject, SKPhotoProtocol {
-    
+
     open var underlyingImage: UIImage!
-    open var photoURL: String!
+    
+    open var photoURL: String! {
+        didSet {
+            if photoURL != nil {
+                // Fetch Image
+                if FileManager.default.fileExists(atPath: photoURL) {
+                    if let data = FileManager.default.contents(atPath: photoURL), let image = UIImage(data: data) {
+                        self.underlyingImage = image
+                        self.loadUnderlyingImageComplete()
+                    }
+                }
+            }
+        }
+    }
+    
     open var contentMode: UIViewContentMode = .scaleToFill
     open var shouldCachePhotoURLImage: Bool = false
     open var captionTitle: String!
     open var captionDetail: String!
     open var index: Int = 0
     open var videoURL: URL!
+    open var enableDownload: Bool = false
+    open var isDownloading: Bool = false
+    weak open var delegate: SKPhotoDownloadDelegate!
+
+    open var downloadProgress: CGFloat = 0.0 {
+        didSet {
+            guard let delegate = delegate else {
+                return
+            }
+            delegate.progress(value: downloadProgress)
+            
+            if downloadProgress >= 1.0 {
+                enableDownload = false
+                delegate.downloadFinished()
+            }
+        }
+    }
     
     override init() {
         super.init()
@@ -35,10 +66,15 @@ open class SKLocalPhoto: NSObject, SKPhotoProtocol {
         underlyingImage = holder
     }
     
-    convenience init(videoURL: URL) {
+    convenience init(videoURL: URL, holderURL: URL?) {
         self.init()
         self.videoURL = videoURL
-        underlyingImage = SKPhoto.videoThumb(videoURL)
+        
+        if holderURL != nil {
+            underlyingImage = UIImage(contentsOfFile: holderURL!.path)
+        } else {
+            underlyingImage = SKPhoto.videoThumb(videoURL)
+        }
     }
     
     open func checkCache() {}
@@ -76,7 +112,7 @@ open class SKLocalPhoto: NSObject, SKPhotoProtocol {
         return SKLocalPhoto(url: url, holder: holder)
     }
     
-    open class func photoWithVideoURL(_ videoURL: URL) -> SKLocalPhoto {
-        return SKLocalPhoto(videoURL: videoURL)
+    open class func photoWithVideoURL(_ videoURL: URL, holderURL: URL?) -> SKLocalPhoto {
+        return SKLocalPhoto(videoURL: videoURL, holderURL: holderURL)
     }
 }

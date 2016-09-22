@@ -538,6 +538,10 @@ internal extension SKPhotoBrowser {
             page.pauseVideo()
         }
     }
+    
+    func downloadPhotoPressed() {
+        delegate?.downloadPhoto?(self, index: currentPageIndex)
+    }
 }
 
 // MARK: - Private Function 
