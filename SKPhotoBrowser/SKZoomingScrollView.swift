@@ -336,7 +336,7 @@ open class SKZoomingScrollView: UIScrollView {
             setMaxMinZoomScalesForCurrentBounds()
             
             if photo.enableDownload && downloadButton == nil {
-                downloadButton = SKDownloadButton(frame: CGRect(x: 0, y: 0, width: 68, height: 68))
+                downloadButton = SKDownloadButton(frame: CGRect(x: 0, y: 0, width: 64, height: 64))
                 downloadButton.delegate = self
                 if photo.isDownloading {
                     downloadButton.setProgress(photo.downloadProgress, animated: false)

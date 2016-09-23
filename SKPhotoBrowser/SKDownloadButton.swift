@@ -52,8 +52,8 @@ class SKDownloadButton: UIView {
         downloadImageView.clipsToBounds = true
         downloadImageView.layer.masksToBounds = true
         downloadImageView.layer.cornerRadius = downloadImageView.frame.width / 2.0
-        downloadImageView.layer.borderColor = UIColor.clear.cgColor
-        downloadImageView.layer.borderWidth = 0
+        downloadImageView.layer.borderColor = UIColor.black.cgColor
+        downloadImageView.layer.borderWidth = 2
         addSubview(downloadImageView)
         
         circularProgress.frame = frame
