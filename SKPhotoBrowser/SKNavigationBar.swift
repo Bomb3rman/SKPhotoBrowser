@@ -39,6 +39,10 @@ class SKNavigationBar: UINavigationBar {
     func updateTitle(_ currentPageIndex: Int) {
         guard let browser = browser else { return }
         
+        if currentPageIndex >= browser.photos.count {
+            return
+        }
+        
         func showCounterTitle() {
             if SKPhotoBrowserOptions.displayCounterLabel {
                 navigationItem.titleView = nil

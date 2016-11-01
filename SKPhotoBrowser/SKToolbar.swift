@@ -49,6 +49,10 @@ class SKToolbar: UIToolbar {
     func updateToolbar(_ currentPageIndex: Int) {
         guard let browser = browser else { return }
         
+        if currentPageIndex >= browser.photos.count {
+            return
+        }
+        
         let photo = browser.photoAtIndex(currentPageIndex)
         
         if let captionTitle = photo.captionTitle {
