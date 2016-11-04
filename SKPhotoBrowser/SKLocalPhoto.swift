@@ -7,10 +7,13 @@
 //
 
 import UIKit
+import Photos
 
 // MARK: - SKLocalPhoto
 open class SKLocalPhoto: NSObject, SKPhotoProtocol {
-
+    
+    static let ImageManager = PHImageManager.default()
+    
     open var underlyingImage: UIImage!
     
     open var photoURL: String! {
@@ -21,6 +24,14 @@ open class SKLocalPhoto: NSObject, SKPhotoProtocol {
                     if let data = FileManager.default.contents(atPath: photoURL), let image = UIImage(data: data) {
                         self.underlyingImage = image
                         self.loadUnderlyingImageComplete()
+                    }
+                } else {
+                    let assets = PHAsset.fetchAssets(withLocalIdentifiers: [photoURL], options: nil)
+                    if let asset = assets.firstObject {
+                        SKLocalPhoto.ImageManager.requestImage(for: asset, targetSize: UIScreen.main.bounds.size, contentMode: .aspectFill, options: nil, resultHandler: { (result: UIImage?, info: [AnyHashable : Any]?) in
+                            self.underlyingImage = result
+                            self.loadUnderlyingImageComplete()
+                        })
                     }
                 }
             }
@@ -36,7 +47,7 @@ open class SKLocalPhoto: NSObject, SKPhotoProtocol {
     open var enableDownload: Bool = false
     open var isDownloading: Bool = false
     weak open var delegate: SKPhotoDownloadDelegate!
-
+    
     open var downloadProgress: CGFloat = 0.0 {
         didSet {
             guard let delegate = delegate else {
@@ -87,13 +98,22 @@ open class SKLocalPhoto: NSObject, SKPhotoProtocol {
         
         if photoURL != nil {
             // Fetch Image
+            // If photoURL is file path load image from filesystem
+            // else maybe the photoURL is asset local identifier, attempt to load from PHImageManager
             if FileManager.default.fileExists(atPath: photoURL) {
                 if let data = FileManager.default.contents(atPath: photoURL) {
-                    self.loadUnderlyingImageComplete()
                     if let image = UIImage(data: data) {
                         self.underlyingImage = image
                         self.loadUnderlyingImageComplete()
                     }
+                }
+            } else {
+                let assets = PHAsset.fetchAssets(withLocalIdentifiers: [photoURL], options: nil)
+                if let asset = assets.firstObject {
+                    SKLocalPhoto.ImageManager.requestImage(for: asset, targetSize: UIScreen.main.bounds.size, contentMode: .aspectFill, options: nil, resultHandler: { (result: UIImage?, info: [AnyHashable : Any]?) in
+                        self.underlyingImage = result
+                        self.loadUnderlyingImageComplete()
+                    })
                 }
             }
         }
