@@ -29,7 +29,7 @@ open class SKZoomingScrollView: UIScrollView {
     fileprivate var videoPlayer: SKVideoPlayer!
     fileprivate var playButton: UIButton!
     fileprivate var downloadButton: SKDownloadButton!
-
+    
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         setup()
@@ -513,6 +513,7 @@ private extension SKZoomingScrollView {
         }
         
         videoPlayer = SKVideoPlayer(URL: photo.videoURL)
+        videoPlayer.frame = self.bounds
         videoPlayer.delegate = self
         layer.addSublayer(videoPlayer.layer())
     }
