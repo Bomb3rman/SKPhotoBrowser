@@ -21,6 +21,7 @@ class SKDownloadButton: UIView {
     fileprivate var cancelImageView: UIImageView!
     fileprivate var target: AnyObject?
     fileprivate var selector: Selector?
+    fileprivate let minProgress: CGFloat = 0.015
     
     fileprivate var isShowingCancel: Bool = false {
         didSet {
@@ -57,6 +58,7 @@ class SKDownloadButton: UIView {
         addSubview(downloadImageView)
         
         circularProgress.frame = frame
+        circularProgress.updateProgress(minProgress)
         
         cancelImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: frame.width - 10, height: frame.width - 10))
         cancelImageView.image = UIImage(named: "SKPhotoBrowser.bundle/images/btn_common_download_cancel_blk", in: Bundle(for: SKPhotoBrowser.self), compatibleWith: nil)
@@ -91,6 +93,9 @@ class SKDownloadButton: UIView {
         if progress > 0 && !isShowingCancel {
             isShowingCancel = true
         }
-        circularProgress.updateProgress(progress, animated: animated, duration: 1)
+        
+        if progress > minProgress {
+            circularProgress.updateProgress(progress, animated: animated, duration: 1)
+        }
     }
 }
