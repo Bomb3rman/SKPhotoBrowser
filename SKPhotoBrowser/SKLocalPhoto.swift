@@ -88,6 +88,23 @@ open class SKLocalPhoto: NSObject, SKPhotoProtocol {
         }
     }
     
+    convenience init(localIdentifier: String) {
+        self.init()
+        if let asset = PHAsset.fetchAssets(withLocalIdentifiers: [localIdentifier], options: PHFetchOptions()).firstObject {
+            let videoOption = PHVideoRequestOptions()
+            videoOption.version = .original
+            videoOption.deliveryMode = .fastFormat
+            
+            PHImageManager.default().requestAVAsset(forVideo: asset, options: videoOption, resultHandler: { (avasset: AVAsset?, audioMix: AVAudioMix?, info: [AnyHashable: Any]?) in
+                if let urlAsset = avasset as? AVURLAsset {
+                    self.videoURL = urlAsset.url
+                    self.underlyingImage = SKPhoto.videoThumb(self.videoURL)
+                    self.loadUnderlyingImageComplete()
+                }
+            })
+        }
+    }
+    
     open func checkCache() {}
     
     open func loadUnderlyingImageAndNotify() {
@@ -130,6 +147,10 @@ open class SKLocalPhoto: NSObject, SKPhotoProtocol {
     
     open class func photoWithImageURL(_ url: String, holder: UIImage?) -> SKLocalPhoto {
         return SKLocalPhoto(url: url, holder: holder)
+    }
+    
+    open class func photoWithVideoIdentifier(_ localIdentifier: String) -> SKLocalPhoto {
+        return SKLocalPhoto(localIdentifier: localIdentifier)
     }
     
     open class func photoWithVideoURL(_ videoURL: URL, holderURL: URL?) -> SKLocalPhoto {
