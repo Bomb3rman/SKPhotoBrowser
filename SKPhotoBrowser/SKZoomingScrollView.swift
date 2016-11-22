@@ -85,10 +85,9 @@ open class SKZoomingScrollView: UIScrollView {
     }
     
     func viewWillAppear() {
-        guard let videoPlayer = videoPlayer else {
-            return
+        if let videoPlayer = videoPlayer {
+            videoPlayer.reset()
         }
-        videoPlayer.reset()
         displayPlaybackControls = false
         
         if let playButton = playButton {
@@ -105,10 +104,9 @@ open class SKZoomingScrollView: UIScrollView {
     }
     
     func viewWillDisapper() {
-        guard let videoPlayer = videoPlayer else {
-            return
+        if let videoPlayer = videoPlayer {
+            videoPlayer.reset()
         }
-        videoPlayer.isActive = false
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: SKPHOTO_PLAY_VIDEO_NOTIFICATION), object: nil)
     }
     

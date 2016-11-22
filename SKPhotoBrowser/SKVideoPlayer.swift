@@ -25,7 +25,7 @@ class SKVideoPlayer {
             self.playerLayer.frame = frame
         }
     }
-    var isActive = true
+    var isActive = false
     
     fileprivate var asset: AVURLAsset!
     fileprivate var duration: Float64!
@@ -71,6 +71,7 @@ class SKVideoPlayer {
     }
     
     @objc func play() {
+        isActive = true
         player.play()
         delegate?.playerStarted(self)
     }
@@ -81,7 +82,7 @@ class SKVideoPlayer {
     }
     
     func reset() {
-        isActive = true
+        isActive = false
         self.player.pause()
         player.seek(to: kCMTimeZero, completionHandler: { (finished: Bool) in })
     }
