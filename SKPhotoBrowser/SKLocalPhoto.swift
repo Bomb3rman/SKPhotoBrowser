@@ -26,11 +26,12 @@ open class SKLocalPhoto: NSObject, SKPhotoProtocol {
                         self.loadUnderlyingImageComplete()
                     }
                 } else {
-                    let assets = PHAsset.fetchAssets(withLocalIdentifiers: [photoURL], options: nil)
-                    if let asset = assets.firstObject {
+                    if let asset = PHAsset.fetchAssetWithLocalIdentifier(photoURL, options: nil) {
                         SKLocalPhoto.ImageManager.requestImage(for: asset, targetSize: UIScreen.main.bounds.size, contentMode: .aspectFill, options: nil, resultHandler: { (result: UIImage?, info: [AnyHashable : Any]?) in
-                            self.underlyingImage = result
-                            self.loadUnderlyingImageComplete()
+                            if let image = result {
+                                self.underlyingImage = image
+                                self.loadUnderlyingImageComplete()
+                            }
                         })
                     }
                 }
@@ -125,11 +126,12 @@ open class SKLocalPhoto: NSObject, SKPhotoProtocol {
                     }
                 }
             } else {
-                let assets = PHAsset.fetchAssets(withLocalIdentifiers: [photoURL], options: nil)
-                if let asset = assets.firstObject {
+                if let asset = PHAsset.fetchAssetWithLocalIdentifier(photoURL, options: nil) {
                     SKLocalPhoto.ImageManager.requestImage(for: asset, targetSize: UIScreen.main.bounds.size, contentMode: .aspectFill, options: nil, resultHandler: { (result: UIImage?, info: [AnyHashable : Any]?) in
-                        self.underlyingImage = result
-                        self.loadUnderlyingImageComplete()
+                        if let image = result {
+                            self.underlyingImage = image
+                            self.loadUnderlyingImageComplete()
+                        }
                     })
                 }
             }

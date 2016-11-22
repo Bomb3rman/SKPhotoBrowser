@@ -35,6 +35,7 @@
 		DA8D4C731D87037600CBDFF0 /* SKVideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA8D4C721D87037600CBDFF0 /* SKVideoPlayer.swift */; };
 		DA8D4C7A1D872D7400CBDFF0 /* SKVideoScrubber.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA8D4C791D872D7400CBDFF0 /* SKVideoScrubber.swift */; };
 		DAAA54F61D834FFC005B541C /* SKNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAAA54F51D834FFC005B541C /* SKNavigationBar.swift */; };
+		DAE575C31DE4E0EB00E303EA /* PHAsset+Fetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE575C21DE4E0EB00E303EA /* PHAsset+Fetch.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,6 +80,7 @@
 		DA8D4C721D87037600CBDFF0 /* SKVideoPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SKVideoPlayer.swift; sourceTree = "<group>"; };
 		DA8D4C791D872D7400CBDFF0 /* SKVideoScrubber.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SKVideoScrubber.swift; sourceTree = "<group>"; };
 		DAAA54F51D834FFC005B541C /* SKNavigationBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SKNavigationBar.swift; sourceTree = "<group>"; };
+		DAE575C21DE4E0EB00E303EA /* PHAsset+Fetch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "PHAsset+Fetch.swift"; path = "extensions/PHAsset+Fetch.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +107,7 @@
 			children = (
 				210E53EC1C986D3A008DD5E3 /* UIView+Radius.swift */,
 				210E53EE1C986D57008DD5E3 /* UIImage+Rotation.swift */,
+				DAE575C21DE4E0EB00E303EA /* PHAsset+Fetch.swift */,
 			);
 			name = extensions;
 			sourceTree = "<group>";
@@ -326,6 +329,7 @@
 				89D0BA491D59966B002A811B /* SKMesurement.swift in Sources */,
 				8909B5471BC791510060A053 /* SKPhoto.swift in Sources */,
 				8909B5461BC791510060A053 /* SKIndicatorView.swift in Sources */,
+				DAE575C31DE4E0EB00E303EA /* PHAsset+Fetch.swift in Sources */,
 				89C24A821D657AD1005F09A9 /* SKPhotoBrowserOptions.swift in Sources */,
 				26C97AD51D0EB6870039F6CB /* SKCache.swift in Sources */,
 				DAAA54F61D834FFC005B541C /* SKNavigationBar.swift in Sources */,
