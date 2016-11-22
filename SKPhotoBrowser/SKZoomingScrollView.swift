@@ -81,6 +81,7 @@ open class SKZoomingScrollView: UIScrollView {
         autoresizingMask = [.flexibleWidth, .flexibleTopMargin, .flexibleBottomMargin, .flexibleRightMargin, .flexibleLeftMargin]
         
         NotificationCenter.default.addObserver(self, selector: #selector(scrubberStart), name: NSNotification.Name(rawValue: SKVideoScrubber.Start), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(playVideo), name: NSNotification.Name(rawValue: SKPHOTO_PLAY_VIDEO_NOTIFICATION), object: nil)
     }
     
     func viewWillAppear() {
@@ -99,6 +100,8 @@ open class SKZoomingScrollView: UIScrollView {
             downloadButton.isHidden = false
             bringSubview(toFront: downloadButton)
         }
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(playVideo), name: NSNotification.Name(rawValue: SKPHOTO_PLAY_VIDEO_NOTIFICATION), object: nil)
     }
     
     func viewWillDisapper() {
@@ -106,6 +109,7 @@ open class SKZoomingScrollView: UIScrollView {
             return
         }
         videoPlayer.isActive = false
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: SKPHOTO_PLAY_VIDEO_NOTIFICATION), object: nil)
     }
     
     func displayingVideo() -> Bool {
@@ -135,6 +139,10 @@ open class SKZoomingScrollView: UIScrollView {
     }
     
     func playVideo() {
+        if photo.videoURL == nil {
+            return
+        }
+        
         if videoPlayer == nil {
             initVideoPlayer()
         }
@@ -143,7 +151,10 @@ open class SKZoomingScrollView: UIScrollView {
             return
         }
         
-        playButton.isHidden = true
+        if let button = playButton {
+            button.isHidden = true
+        }
+        
         displayPlaybackControls = true
         
         if !videoPlayer.isPlaying() {
@@ -349,6 +360,7 @@ open class SKZoomingScrollView: UIScrollView {
                 playButton.addTarget(self, action: #selector(playVideo), for: .touchUpInside)
                 playButton.sizeToFit()
                 playButton.isUserInteractionEnabled = true
+                playButton.isHidden = isPlayingVideo()
                 addSubview(playButton)
             }
             

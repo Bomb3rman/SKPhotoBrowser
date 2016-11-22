@@ -139,7 +139,11 @@ open class SKLocalPhoto: NSObject, SKPhotoProtocol {
     open func loadUnderlyingImageComplete() {
         NotificationCenter.default.post(name: Notification.Name(rawValue: SKPHOTO_LOADING_DID_END_NOTIFICATION), object: self)
     }
-    
+
+    open func playVideo() {
+        NotificationCenter.default.post(name: Notification.Name(rawValue: SKPHOTO_PLAY_VIDEO_NOTIFICATION), object: self)
+    }
+
     // MARK: - class func
     open class func photoWithImageURL(_ url: String) -> SKLocalPhoto {
         return SKLocalPhoto(url: url)

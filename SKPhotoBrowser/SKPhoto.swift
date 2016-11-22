@@ -27,6 +27,7 @@ import Photos
     weak var delegate: SKPhotoDownloadDelegate! { get set }
     func loadUnderlyingImageAndNotify()
     func checkCache()
+    func playVideo()
 }
 
 // MARK: - SKPhoto
@@ -150,6 +151,9 @@ open class SKPhoto: NSObject, SKPhotoProtocol {
         NotificationCenter.default.post(name: Notification.Name(rawValue: SKPHOTO_LOADING_DID_END_NOTIFICATION), object: self)
     }
     
+    open func playVideo() {
+        NotificationCenter.default.post(name: Notification.Name(rawValue: SKPHOTO_PLAY_VIDEO_NOTIFICATION), object: self)
+    }
 }
 
 // MARK: - Static Function

@@ -14,6 +14,7 @@ class FromLocalViewController: UIViewController, UICollectionViewDataSource, UIC
     
     var images = [SKPhotoProtocol]()
     var downloadTimer: Timer!
+    var selectedIndex: Int = -1
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -76,17 +77,15 @@ extension FromLocalViewController {
         guard let cell = collectionView.cellForItem(at: indexPath) as? ExampleCollectionViewCell else {
             return
         }
+        
         guard let originImage = cell.exampleImageView.image else {
             return
         }
         
-//        SKPhotoBrowserOptions.displayToolbar = false
-        
         let browser = SKPhotoBrowser(originImage: originImage, photos: images, animatedFromView: cell)
         browser.initializePageIndex((indexPath as NSIndexPath).row)
         browser.delegate = self
-//        browser.updateCloseButton(UIImage(named: "image1.jpg")!)
-        
+        selectedIndex = (indexPath as NSIndexPath).row
         present(browser, animated: true, completion: {})
     }
     
@@ -106,6 +105,11 @@ extension FromLocalViewController {
     func didShowPhotoAtIndex(_ index: Int) {
         collectionView.visibleCells.forEach({$0.isHidden = false})
         collectionView.cellForItem(at: IndexPath(item: index, section: 0))?.isHidden = true
+        
+        if index == selectedIndex {
+            images[selectedIndex].playVideo()
+        }
+        selectedIndex = -1
     }
     
     func willDismissAtPageIndex(_ index: Int) {
