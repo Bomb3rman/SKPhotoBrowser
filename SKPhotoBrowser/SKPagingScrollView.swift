@@ -115,7 +115,7 @@ class SKPagingScrollView: UIScrollView {
         let lastIndex: Int = getLastIndex()
         
         visiblePages
-            .filter({ $0.tag - pageIndexTagOffset < firstIndex ||  $0.tag - pageIndexTagOffset < lastIndex })
+            .filter({ $0.tag - pageIndexTagOffset < firstIndex ||  $0.tag - pageIndexTagOffset > lastIndex })
             .forEach { page in
                 recycledPages.append(page)
                 page.prepareForReuse()
@@ -131,7 +131,7 @@ class SKPagingScrollView: UIScrollView {
         }
         
         for index: Int in firstIndex...lastIndex {
-            if visiblePages.filter({ $0.tag - pageIndexTagOffset == index }).count > 0 {
+            if visiblePages.contains(where: ({ $0.tag - pageIndexTagOffset == index })) {
                 continue
             }
             
