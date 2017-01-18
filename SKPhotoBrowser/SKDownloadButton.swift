@@ -47,14 +47,12 @@ class SKDownloadButton: UIView {
         super.init(frame: frame)
         
         downloadImageView = UIImageView(frame: frame)
-        downloadImageView.image = UIImage(named: "SKPhotoBrowser.bundle/images/btn_common_download_blk", in: Bundle(for: SKPhotoBrowser.self), compatibleWith: nil)
+        downloadImageView.image = UIImage(named: "SKPhotoBrowser.bundle/images/btn_common_download_new_blk", in: Bundle(for: SKPhotoBrowser.self), compatibleWith: nil)
         downloadImageView.contentMode = .scaleAspectFit
         downloadImageView.backgroundColor = .white
         downloadImageView.clipsToBounds = true
         downloadImageView.layer.masksToBounds = true
         downloadImageView.layer.cornerRadius = downloadImageView.frame.width / 2.0
-        downloadImageView.layer.borderColor = UIColor.black.cgColor
-        downloadImageView.layer.borderWidth = 2
         addSubview(downloadImageView)
         
         circularProgress.frame = frame

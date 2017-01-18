@@ -78,12 +78,16 @@ open class SKLocalPhoto: NSObject, SKPhotoProtocol {
         underlyingImage = holder
     }
     
-    convenience init(videoURL: URL, holderURL: URL?) {
+    convenience init(videoURL: URL, holderURL: URL?, downloaded: Bool) {
         self.init()
         self.videoURL = videoURL
         
-        if holderURL != nil {
-            underlyingImage = UIImage(contentsOfFile: holderURL!.path)
+        if holderURL != nil && !downloaded {
+            underlyingImage = UIImage(contentsOfFile: holderURL!.path)?.applyBlur(
+                withRadius: CGFloat(1.0),
+                tintColor: UIColor(red: 0.05, green: 0.05, blue: 0.05, alpha: 0.25),
+                saturationDeltaFactor: 1.0,
+                maskImage: nil)
         } else {
             underlyingImage = SKPhoto.videoThumb(videoURL)
         }
@@ -121,7 +125,15 @@ open class SKLocalPhoto: NSObject, SKPhotoProtocol {
             if FileManager.default.fileExists(atPath: photoURL) {
                 if let data = FileManager.default.contents(atPath: photoURL) {
                     if let image = UIImage(data: data) {
-                        self.underlyingImage = image
+                        if (isDownloading || enableDownload) {
+                            self.underlyingImage = image.applyBlur(
+                                withRadius: CGFloat(1.0),
+                                tintColor: UIColor(red: 0.05, green: 0.05, blue: 0.05, alpha: 0.25),
+                                saturationDeltaFactor: 1.0,
+                                maskImage: nil)
+                        } else {
+                            self.underlyingImage = image
+                        }
                         self.loadUnderlyingImageComplete()
                     }
                 }
@@ -129,7 +141,15 @@ open class SKLocalPhoto: NSObject, SKPhotoProtocol {
                 if let asset = PHAsset.fetchAssetWithLocalIdentifier(photoURL, options: nil) {
                     SKLocalPhoto.ImageManager.requestImage(for: asset, targetSize: UIScreen.main.bounds.size, contentMode: .aspectFill, options: nil, resultHandler: { (result: UIImage?, info: [AnyHashable : Any]?) in
                         if let image = result {
-                            self.underlyingImage = image
+                            if (self.isDownloading || self.enableDownload) {
+                                self.underlyingImage = image.applyBlur(
+                                    withRadius: CGFloat(1.0),
+                                    tintColor: UIColor(red: 0.05, green: 0.05, blue: 0.05, alpha: 0.25),
+                                    saturationDeltaFactor: 1.0,
+                                    maskImage: nil)
+                            } else {
+                                self.underlyingImage = image
+                            }
                             self.loadUnderlyingImageComplete()
                         }
                     })
@@ -159,7 +179,7 @@ open class SKLocalPhoto: NSObject, SKPhotoProtocol {
         return SKLocalPhoto(localIdentifier: localIdentifier)
     }
     
-    open class func photoWithVideoURL(_ videoURL: URL, holderURL: URL?) -> SKLocalPhoto {
-        return SKLocalPhoto(videoURL: videoURL, holderURL: holderURL)
+    open class func photoWithVideoURL(_ videoURL: URL, holderURL: URL?, downloaded: Bool) -> SKLocalPhoto {
+        return SKLocalPhoto(videoURL: videoURL, holderURL: holderURL, downloaded: downloaded)
     }
 }

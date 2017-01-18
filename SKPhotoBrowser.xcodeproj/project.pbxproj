@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1FEC297A1E3000B000A25819 /* UIImage+ImageEffects.h in Headers */ = {isa = PBXBuildFile; fileRef = 1FEC29781E3000B000A25819 /* UIImage+ImageEffects.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1FEC297B1E3000B000A25819 /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 1FEC29791E3000B000A25819 /* UIImage+ImageEffects.m */; };
 		210E53ED1C986D3A008DD5E3 /* UIView+Radius.swift in Sources */ = {isa = PBXBuildFile; fileRef = 210E53EC1C986D3A008DD5E3 /* UIView+Radius.swift */; };
 		210E53EF1C986D57008DD5E3 /* UIImage+Rotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 210E53EE1C986D57008DD5E3 /* UIImage+Rotation.swift */; };
 		26C97AD51D0EB6870039F6CB /* SKCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C97AD41D0EB6870039F6CB /* SKCache.swift */; };
@@ -49,6 +51,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1FEC29781E3000B000A25819 /* UIImage+ImageEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIImage+ImageEffects.h"; path = "extensions/UIImage+ImageEffects.h"; sourceTree = "<group>"; };
+		1FEC29791E3000B000A25819 /* UIImage+ImageEffects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIImage+ImageEffects.m"; path = "extensions/UIImage+ImageEffects.m"; sourceTree = "<group>"; };
 		210E53EC1C986D3A008DD5E3 /* UIView+Radius.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UIView+Radius.swift"; path = "extensions/UIView+Radius.swift"; sourceTree = "<group>"; };
 		210E53EE1C986D57008DD5E3 /* UIImage+Rotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UIImage+Rotation.swift"; path = "extensions/UIImage+Rotation.swift"; sourceTree = "<group>"; };
 		26C97AD41D0EB6870039F6CB /* SKCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SKCache.swift; sourceTree = "<group>"; };
@@ -105,6 +109,8 @@
 		210E53EB1C986D1C008DD5E3 /* extensions */ = {
 			isa = PBXGroup;
 			children = (
+				1FEC29781E3000B000A25819 /* UIImage+ImageEffects.h */,
+				1FEC29791E3000B000A25819 /* UIImage+ImageEffects.m */,
 				210E53EC1C986D3A008DD5E3 /* UIView+Radius.swift */,
 				210E53EE1C986D57008DD5E3 /* UIImage+Rotation.swift */,
 				DAE575C21DE4E0EB00E303EA /* PHAsset+Fetch.swift */,
@@ -196,6 +202,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8909B5341BC791280060A053 /* SKPhotoBrowser.h in Headers */,
+				1FEC297A1E3000B000A25819 /* UIImage+ImageEffects.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -251,7 +258,7 @@
 				TargetAttributes = {
 					8909B52F1BC791280060A053 = {
 						CreatedOnToolsVersion = 7.0;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 0820;
 					};
 					A64B89321CB04222000071B9 = {
 						CreatedOnToolsVersion = 7.3;
@@ -322,6 +329,7 @@
 				8909B5441BC791510060A053 /* SKDetectingImageView.swift in Sources */,
 				8909B54A1BC791510060A053 /* SKZoomingScrollView.swift in Sources */,
 				8CA6C6521CBE76E80054D3C2 /* SKLocalPhoto.swift in Sources */,
+				1FEC297B1E3000B000A25819 /* UIImage+ImageEffects.m in Sources */,
 				89D0BA471D5994A8002A811B /* SKAnimator.swift in Sources */,
 				DA1339EB1D91C706008B7EFE /* RPCircularProgress.swift in Sources */,
 				210E53ED1C986D3A008DD5E3 /* UIView+Radius.swift in Sources */,
@@ -473,6 +481,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.keishi.suzuki.SKPhotoBrowser;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 			};
@@ -494,6 +503,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.keishi.suzuki.SKPhotoBrowser;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;

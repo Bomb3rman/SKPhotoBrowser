@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "UIImage+ImageEffects.h"
+
 //! Project version number for SKPhotoBrowser.
 FOUNDATION_EXPORT double SKPhotoBrowserVersionNumber;
 
