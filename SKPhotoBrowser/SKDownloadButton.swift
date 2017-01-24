@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import MRProgress
 
 public protocol SKDownloadButtonDelegate: class {
     func cancelPressed()
@@ -18,28 +19,25 @@ class SKDownloadButton: UIView {
     weak var delegate: SKDownloadButtonDelegate?
     
     fileprivate var downloadImageView: UIImageView!
-    fileprivate var cancelImageView: UIImageView!
     fileprivate var target: AnyObject?
     fileprivate var selector: Selector?
-    fileprivate let minProgress: CGFloat = 0.015
     
     fileprivate var isShowingCancel: Bool = false {
         didSet {
             if isShowingCancel {
                 downloadImageView.removeFromSuperview()
                 addSubview(circularProgress)
-                addSubview(cancelImageView)
             } else {
                 circularProgress.removeFromSuperview()
-                cancelImageView.removeFromSuperview()
                 addSubview(downloadImageView)
             }
         }
     }
-    lazy fileprivate var circularProgress: RPCircularProgress = {
-        let progress = RPCircularProgress()
-        progress.thicknessRatio = 0.1
-        progress.enableIndeterminate()
+    lazy fileprivate var circularProgress: MRCircularProgressView = {
+        let progress = MRCircularProgressView()
+        progress.tintColor = UIColor.white
+        progress.mayStop = true
+        progress.lineWidth = 3
         return progress
     }()
     
@@ -56,18 +54,7 @@ class SKDownloadButton: UIView {
         addSubview(downloadImageView)
         
         circularProgress.frame = frame
-        circularProgress.updateProgress(minProgress)
-        
-        cancelImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: frame.width - 10, height: frame.width - 10))
-        cancelImageView.image = UIImage(named: "SKPhotoBrowser.bundle/images/btn_common_download_cancel_blk", in: Bundle(for: SKPhotoBrowser.self), compatibleWith: nil)
-        cancelImageView.contentMode = .scaleAspectFit
-        cancelImageView.backgroundColor = .white
-        cancelImageView.clipsToBounds = true
-        cancelImageView.layer.masksToBounds = true
-        cancelImageView.layer.cornerRadius = cancelImageView.frame.width / 2.0
-        cancelImageView.layer.borderColor = UIColor.clear.cgColor
-        cancelImageView.layer.borderWidth = 0
-        cancelImageView.center = circularProgress.center
+        circularProgress.setProgress(0, animated: false)
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(buttonPressed))
         addGestureRecognizer(tapGesture)
@@ -92,8 +79,8 @@ class SKDownloadButton: UIView {
             isShowingCancel = true
         }
         
-        if progress > minProgress {
-            circularProgress.updateProgress(progress, animated: animated, duration: 1)
+        if progress > 0 {
+            circularProgress.setProgress(Float(progress), animated: animated)
         }
     }
 }
