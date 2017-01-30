@@ -37,7 +37,9 @@ open class SKZoomingScrollView: UIScrollView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setup()
+        if (tapView != nil) {
+            setup()
+        }
     }
     
     convenience init(frame: CGRect, browser: SKPhotoBrowser) {
@@ -91,7 +93,7 @@ open class SKZoomingScrollView: UIScrollView {
         displayPlaybackControls = false
         
         if let playButton = playButton {
-            playButton.isHidden = false
+            playButton.isHidden = photo.autoPlayVideo ? true : false
             bringSubview(toFront: playButton)
         }
         
@@ -101,6 +103,10 @@ open class SKZoomingScrollView: UIScrollView {
         }
         
         NotificationCenter.default.addObserver(self, selector: #selector(playVideo), name: NSNotification.Name(rawValue: SKPHOTO_PLAY_VIDEO_NOTIFICATION), object: nil)
+        
+        if photo.autoPlayVideo {
+            playVideo()
+        }
     }
     
     func viewWillDisapper() {

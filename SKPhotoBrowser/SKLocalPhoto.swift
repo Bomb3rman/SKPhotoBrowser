@@ -47,6 +47,7 @@ open class SKLocalPhoto: NSObject, SKPhotoProtocol {
     open var videoURL: URL!
     open var enableDownload: Bool = false
     open var isDownloading: Bool = false
+    open var autoPlayVideo: Bool = false
     weak open var delegate: SKPhotoDownloadDelegate!
     
     open var downloadProgress: CGFloat = 0.0 {
@@ -78,9 +79,10 @@ open class SKLocalPhoto: NSObject, SKPhotoProtocol {
         underlyingImage = holder
     }
     
-    convenience init(videoURL: URL, holderURL: URL?, downloaded: Bool) {
+    convenience init(videoURL: URL, holderURL: URL?, downloaded: Bool, autoplay: Bool) {
         self.init()
         self.videoURL = videoURL
+        self.autoPlayVideo = autoplay
         
         if holderURL != nil && !downloaded {
             underlyingImage = UIImage(contentsOfFile: holderURL!.path)?.applyBlur(
@@ -179,7 +181,7 @@ open class SKLocalPhoto: NSObject, SKPhotoProtocol {
         return SKLocalPhoto(localIdentifier: localIdentifier)
     }
     
-    open class func photoWithVideoURL(_ videoURL: URL, holderURL: URL?, downloaded: Bool) -> SKLocalPhoto {
-        return SKLocalPhoto(videoURL: videoURL, holderURL: holderURL, downloaded: downloaded)
+    open class func photoWithVideoURL(_ videoURL: URL, holderURL: URL?, downloaded: Bool, autoPlayVideo: Bool) -> SKLocalPhoto {
+        return SKLocalPhoto(videoURL: videoURL, holderURL: holderURL, downloaded: downloaded, autoplay: autoPlayVideo)
     }
 }
