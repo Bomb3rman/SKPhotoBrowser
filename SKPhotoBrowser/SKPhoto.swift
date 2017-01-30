@@ -24,6 +24,7 @@ import Photos
     var enableDownload: Bool { get set }
     var isDownloading: Bool {get set}
     var downloadProgress: CGFloat { get set }
+    var autoPlayVideo: Bool { get }
     weak var delegate: SKPhotoDownloadDelegate! { get set }
     func loadUnderlyingImageAndNotify()
     func checkCache()
@@ -32,7 +33,7 @@ import Photos
 
 // MARK: - SKPhoto
 open class SKPhoto: NSObject, SKPhotoProtocol {
-    
+    public var autoPlayVideo: Bool = false
     open var underlyingImage: UIImage!
     open var photoURL: String!
     open var contentMode: UIViewContentMode = .scaleAspectFill
