@@ -39,6 +39,7 @@ open class SKLocalPhoto: NSObject, SKPhotoProtocol {
         }
     }
     
+    open var identifier: Int64 = 0 // not used by the photo browser can be used to identify photo by user
     open var contentMode: UIViewContentMode = .scaleToFill
     open var shouldCachePhotoURLImage: Bool = false
     open var captionTitle: String!

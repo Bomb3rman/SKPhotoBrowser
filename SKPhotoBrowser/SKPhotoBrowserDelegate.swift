@@ -15,7 +15,7 @@ import Foundation
      
      - Parameter index: the index of the new photo
      */
-    @objc optional func didShowPhotoAtIndex(_ index: Int)
+    @objc optional func didShowPhotoAtIndex(_ index: Int, identifier: Int64)
     
     /**
      Tells the delegate the browser will start to dismiss
@@ -60,7 +60,7 @@ import Foundation
      - Parameter index: the index of the removed photo
      - Parameter reload: function that needs to be called after finishing syncing up
      */
-    @objc optional func removePhoto(_ browser: SKPhotoBrowser, index: Int, reload: (() -> Void))
+    @objc optional func removePhoto(_ browser: SKPhotoBrowser, index: Int, identifier: Int64, reload: (() -> Void))
     
     /**
      Asks the delegate for the view for a certain photo. Needed to detemine the animation when presenting/closing the browser.
@@ -79,7 +79,7 @@ import Foundation
      - Parameter index: the index of the photo to download
      
      */
-    @objc optional func downloadPhoto(_ browser: SKPhotoBrowser, index: Int)
+    @objc optional func downloadPhoto(_ browser: SKPhotoBrowser, index: Int, identifier: Int64)
     
     /**
      Tells the delegate the user wants to cancel the downloading of a photo
@@ -88,6 +88,6 @@ import Foundation
      - Parameter index: the index of the photo to cancel download
      
      */
-    @objc optional func cancelDownloadPhoto(_ browser: SKPhotoBrowser, index: Int)
+    @objc optional func cancelDownloadPhoto(_ browser: SKPhotoBrowser, index: Int, identifier: Int64)
 }
 

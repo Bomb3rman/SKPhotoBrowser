@@ -76,7 +76,7 @@ class SKPagingScrollView: UIScrollView {
     }
     
     func animate(_ frame: CGRect) {
-        setContentOffset(CGPoint(x: frame.origin.x - sideMargin, y: 0), animated: true)
+        setContentOffset(CGPoint(x: frame.origin.x - sideMargin, y: 0), animated: false)
     }
     
     func updateFrame(_ bounds: CGRect, currentPageIndex: Int) {

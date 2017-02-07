@@ -126,12 +126,7 @@ open class SKPhotoBrowser: UIViewController {
     override open func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         reloadData()
-        
-        var i = 0
-        for photo: SKPhotoProtocol in photos {
-            photo.index = i
-            i = i + 1
-        }
+        reindexPhotos()
     }
     
     override open func viewWillLayoutSubviews() {
@@ -144,7 +139,7 @@ open class SKPhotoBrowser: UIViewController {
         navigationBar.frame = frameForNavigationBarAtOrientation()
         
         // where did start
-        delegate?.didShowPhotoAtIndex?(currentPageIndex)
+        delegate?.didShowPhotoAtIndex?(currentPageIndex, identifier: photos[currentPageIndex].identifier)
         
         isPerformingLayout = false
     }
@@ -184,6 +179,42 @@ open class SKPhotoBrowser: UIViewController {
         view.setNeedsLayout()
     }
     
+    fileprivate func reindexPhotos() {
+        var i = 0
+        for photo: SKPhotoProtocol in photos {
+            photo.index = i
+            i = i + 1
+        }
+    }
+    
+    open func insertPhoto(photo: SKPhotoProtocol, atIndex: Int) {
+        photos.insert(photo, at: atIndex)
+        reindexPhotos()
+        if (currentPageIndex>=atIndex) {
+            currentPageIndex += 1
+        }
+        reloadData()
+    }
+    
+    open func removePhoto(atIndex: Int) {
+        if (currentPageIndex>atIndex) {
+            currentPageIndex -= 1
+        } else if (currentPageIndex==atIndex) {
+            if (atIndex == 0) {
+                if (photos.count>1) {
+                    currentPageIndex = 0
+                } else {
+                    dismissPhotoBrowser(animated: true)
+                }
+            } else {
+                currentPageIndex -= 1
+            }
+        }
+        photos.remove(at: atIndex)
+        reindexPhotos()
+        reloadData()
+    }
+    
     open func performLayout() {
         isPerformingLayout = true
         
@@ -194,7 +225,7 @@ open class SKPhotoBrowser: UIViewController {
         pagingScrollView.updateContentOffset(currentPageIndex)
         pagingScrollView.tilePages()
         
-        delegate?.didShowPhotoAtIndex?(currentPageIndex)
+        delegate?.didShowPhotoAtIndex?(currentPageIndex, identifier: photos[currentPageIndex].identifier)
         
         updateNavigationBarAndToolBar()
         
@@ -477,7 +508,7 @@ internal extension SKPhotoBrowser {
         
         let deleteAction: UIAlertAction = UIAlertAction(title: "Delete Photo", style: .destructive, handler: {(alert: UIAlertAction!) in
             if let sself = wself {
-                sself.delegate?.removePhoto?(self, index: sself.currentPageIndex) { [weak self] in
+                sself.delegate?.removePhoto?(self, index: sself.currentPageIndex, identifier: sself.photos[sself.currentPageIndex].identifier) { [weak self] in
                     self?.deleteImage()
                 }
             }
@@ -541,7 +572,7 @@ internal extension SKPhotoBrowser {
     }
     
     func downloadPhotoPressed() {
-        delegate?.downloadPhoto?(self, index: currentPageIndex)
+        delegate?.downloadPhoto?(self, index: currentPageIndex, identifier: photos[currentPageIndex].identifier)
     }
 }
 
@@ -652,7 +683,7 @@ extension SKPhotoBrowser: UIScrollViewDelegate {
                 page.viewWillDisapper()
             }
             
-            delegate?.didShowPhotoAtIndex?(currentPageIndex)
+            delegate?.didShowPhotoAtIndex?(currentPageIndex, identifier: photos[currentPageIndex].identifier)
             updateNavigationBarAndToolBar()
         }
     }

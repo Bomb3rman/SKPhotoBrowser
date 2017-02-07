@@ -567,10 +567,10 @@ extension SKZoomingScrollView: SKPhotoDownloadDelegate {
 
 extension SKZoomingScrollView: SKDownloadButtonDelegate {
     public func cancelPressed() {
-        photoBrowser?.delegate?.cancelDownloadPhoto?(photoBrowser!, index: photo.index)
+        photoBrowser?.delegate?.cancelDownloadPhoto?(photoBrowser!, index: photo.index, identifier: photo.identifier)
     }
     
     public func downloadPressed() {
-        photoBrowser?.delegate?.downloadPhoto?(photoBrowser!, index: photo.index)
+        photoBrowser?.delegate?.downloadPhoto?(photoBrowser!, index: photo.index, identifier: photo.identifier)
     }
 }

@@ -15,6 +15,7 @@ import Photos
 }
 
 @objc public protocol SKPhotoProtocol: NSObjectProtocol {
+    var identifier: Int64 { get set }
     var underlyingImage: UIImage! { get }
     var captionTitle: String! { get }
     var captionDetail: String! { get }
@@ -33,6 +34,7 @@ import Photos
 
 // MARK: - SKPhoto
 open class SKPhoto: NSObject, SKPhotoProtocol {
+    open var identifier: Int64 = 0 // not used by the photo browser can be used to identify photo by user
     public var autoPlayVideo: Bool = false
     open var underlyingImage: UIImage!
     open var photoURL: String!
