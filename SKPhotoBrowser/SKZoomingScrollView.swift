@@ -313,7 +313,18 @@ open class SKZoomingScrollView: UIScrollView {
         
         if !flag {
             if photo.underlyingImage == nil {
-                indicatorView.startAnimating()
+                if photo.enableDownload {
+                    if (downloadButton == nil) {
+                        downloadButton = SKDownloadButton(frame: CGRect(x: 0, y: 0, width: 64, height: 64))
+                        downloadButton.delegate = self
+                        if photo.isDownloading {
+                            downloadButton.setProgress(photo.downloadProgress, animated: false)
+                        }
+                        addSubview(downloadButton)
+                    }
+                } else {
+                    indicatorView.startAnimating()
+                }
             }
             photo.loadUnderlyingImageAndNotify()
         } else {
