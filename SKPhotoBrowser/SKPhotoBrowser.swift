@@ -506,7 +506,8 @@ internal extension SKPhotoBrowser {
         })
         actionSheetController.addAction(cancelAction)
         
-        let deleteAction: UIAlertAction = UIAlertAction(title: "Delete Photo", style: .destructive, handler: {(alert: UIAlertAction!) in
+        let isVideo = photos[currentPageIndex].isVideo
+        let deleteAction: UIAlertAction = UIAlertAction(title: "Delete \(isVideo ? "Video" : "Photo")", style: .destructive, handler: {(alert: UIAlertAction!) in
             if let sself = wself {
                 sself.delegate?.removePhoto?(self, index: sself.currentPageIndex, identifier: sself.photos[sself.currentPageIndex].identifier) { [weak self] in
                     self?.deleteImage()

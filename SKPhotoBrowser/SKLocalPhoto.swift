@@ -49,6 +49,7 @@ open class SKLocalPhoto: NSObject, SKPhotoProtocol {
     open var enableDownload: Bool = false
     open var isDownloading: Bool = false
     open var autoPlayVideo: Bool = false
+    open var isVideo: Bool = false
     weak open var delegate: SKPhotoDownloadDelegate!
     
     open var downloadProgress: CGFloat = 0.0 {
@@ -82,6 +83,7 @@ open class SKLocalPhoto: NSObject, SKPhotoProtocol {
     
     convenience init(videoURL: URL, holderURL: URL?, downloaded: Bool, autoplay: Bool) {
         self.init()
+        self.isVideo = true
         self.videoURL = videoURL
         self.autoPlayVideo = autoplay
         
@@ -98,6 +100,7 @@ open class SKLocalPhoto: NSObject, SKPhotoProtocol {
     
     convenience init(localIdentifier: String) {
         self.init()
+        self.isVideo = true
         if let asset = PHAsset.fetchAssets(withLocalIdentifiers: [localIdentifier], options: PHFetchOptions()).firstObject {
             let videoOption = PHVideoRequestOptions()
             videoOption.version = .original

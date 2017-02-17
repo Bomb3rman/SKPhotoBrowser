@@ -26,6 +26,7 @@ import Photos
     var isDownloading: Bool {get set}
     var downloadProgress: CGFloat { get set }
     var autoPlayVideo: Bool { get }
+    var isVideo: Bool { get }
     weak var delegate: SKPhotoDownloadDelegate! { get set }
     func loadUnderlyingImageAndNotify()
     func checkCache()
@@ -46,6 +47,7 @@ open class SKPhoto: NSObject, SKPhotoProtocol {
     open var videoURL: URL!
     open var enableDownload: Bool = false
     open var isDownloading: Bool = false
+    open var isVideo: Bool = false
     weak open var delegate: SKPhotoDownloadDelegate!
     
     open var downloadProgress: CGFloat = 0.0 {
