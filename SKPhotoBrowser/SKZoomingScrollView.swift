@@ -327,25 +327,12 @@ open class SKZoomingScrollView: UIScrollView {
                 }
             }
             photo.loadUnderlyingImageAndNotify()
+            return
         } else {
             indicatorView.stopAnimating()
         }
         
         if let image = photo.underlyingImage {
-            /*
-             // create padding
-             let width: CGFloat = image.size.width + SKPhotoBrowserOptions.imagePaddingX
-             let height: CGFloat = image.size.height + SKPhotoBrowserOptions.imagePaddingY;
-             UIGraphicsBeginImageContextWithOptions(CGSizeMake(width, height), false, 0.0);
-             let context: CGContextRef = UIGraphicsGetCurrentContext()!;
-             UIGraphicsPushContext(context);
-             let origin: CGPoint = CGPointMake((width - image.size.width) / 2, (height - image.size.height) / 2);
-             image.drawAtPoint(origin)
-             UIGraphicsPopContext();
-             let imageWithPadding = UIGraphicsGetImageFromCurrentImageContext();
-             UIGraphicsEndImageContext();
-             */
-            
             // image
             photoImageView.image = image
             photoImageView.contentMode = photo.contentMode

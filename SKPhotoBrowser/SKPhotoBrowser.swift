@@ -162,7 +162,9 @@ open class SKPhotoBrowser: UIViewController {
             
             if photo.underlyingImage != nil {
                 page.displayImage(complete: true)
-                self.loadAdjacentPhotosIfNecessary(photo)
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2){
+                    self.loadAdjacentPhotosIfNecessary(photo)
+                }
             } else {
                 page.displayImageFailure()
             }

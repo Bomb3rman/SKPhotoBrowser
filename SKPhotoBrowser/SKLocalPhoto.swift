@@ -118,6 +118,8 @@ open class SKLocalPhoto: NSObject, SKPhotoProtocol {
     
     open func checkCache() {}
     
+    fileprivate var loadingImage = false
+    
     open func loadUnderlyingImageAndNotify() {
         
         if underlyingImage != nil && photoURL == nil {
@@ -129,19 +131,27 @@ open class SKLocalPhoto: NSObject, SKPhotoProtocol {
             // If photoURL is file path load image from filesystem
             // else maybe the photoURL is asset local identifier, attempt to load from PHImageManager
             if FileManager.default.fileExists(atPath: photoURL) {
-                if let data = FileManager.default.contents(atPath: photoURL) {
-                    if let image = UIImage(data: data) {
-                        if (isDownloading || enableDownload) {
+                if (self.loadingImage) {
+                    return
+                }
+                self.loadingImage = true
+                DispatchQueue.global(qos: DispatchQoS.QoSClass.default).async {
+                    if let image = UIImage(contentsOfFile: self.photoURL) {
+                        if (self.isDownloading || self.enableDownload) {
                             self.underlyingImage = image.applyBlur(
                                 withRadius: CGFloat(1.0),
+                                
+                                
                                 tintColor: UIColor(red: 0.05, green: 0.05, blue: 0.05, alpha: 0.25),
                                 saturationDeltaFactor: 1.0,
                                 maskImage: nil)
                         } else {
+                            // TODO we might wanna scale that UIImage if it is too big
                             self.underlyingImage = image
                         }
                         self.loadUnderlyingImageComplete()
                     }
+                    self.loadingImage = false
                 }
             } else {
                 if let asset = PHAsset.fetchAssetWithLocalIdentifier(photoURL, options: nil) {
