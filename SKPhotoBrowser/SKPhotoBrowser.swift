@@ -212,6 +212,7 @@ open class SKPhotoBrowser: UIViewController {
                 currentPageIndex -= 1
             }
         }
+        
         photos.remove(at: atIndex)
         reindexPhotos()
         reloadData()
@@ -511,9 +512,7 @@ internal extension SKPhotoBrowser {
         let isVideo = photos[currentPageIndex].isVideo
         let deleteAction: UIAlertAction = UIAlertAction(title: "Delete \(isVideo ? "Video" : "Photo")", style: .destructive, handler: {(alert: UIAlertAction!) in
             if let sself = wself {
-                sself.delegate?.removePhoto?(self, index: sself.currentPageIndex, identifier: sself.photos[sself.currentPageIndex].identifier) { [weak self] in
-                    self?.deleteImage()
-                }
+                sself.delegate?.removePhoto?(self, index: sself.currentPageIndex, identifier: sself.photos[sself.currentPageIndex].identifier)
             }
         })
         actionSheetController.addAction(deleteAction)

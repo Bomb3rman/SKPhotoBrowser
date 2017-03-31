@@ -58,9 +58,8 @@ import Foundation
      
      - Parameter browser: reference to the calling SKPhotoBrowser
      - Parameter index: the index of the removed photo
-     - Parameter reload: function that needs to be called after finishing syncing up
      */
-    @objc optional func removePhoto(_ browser: SKPhotoBrowser, index: Int, identifier: Int64, reload: (() -> Void))
+    @objc optional func removePhoto(_ browser: SKPhotoBrowser, index: Int, identifier: Int64)
     
     /**
      Asks the delegate for the view for a certain photo. Needed to detemine the animation when presenting/closing the browser.
