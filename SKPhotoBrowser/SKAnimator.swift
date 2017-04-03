@@ -71,7 +71,7 @@ class SKAnimator: NSObject, SKPhotoBrowserAnimatorDelegate {
     }
     
     func willDismiss(_ browser: SKPhotoBrowser) {
-        guard let sender = browser.delegate?.viewForPhoto?(browser, index: browser.currentPageIndex),
+        guard let sender = browser.delegate?.viewForPhoto?(browser, index: browser.currentPageIndex) ?? senderViewForAnimation,
             let image = browser.photoAtIndex(browser.currentPageIndex).underlyingImage,
             let scrollView = browser.pageDisplayedAtIndex(browser.currentPageIndex) else {
                 
